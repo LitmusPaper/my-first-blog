@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Ana Səhifə {% endblock %}
+{% block page %}
+	<center>
+		<h1> Post Dəyiş</h1>
+	
+		<form action="" enctype="multipart/form-data" method="post">
+			{% csrf_token %}
+			{% for field in form %}
+				<br>
+				{{ field.label_tag }}
+				{{field}}
+				<br>
+			{% endfor %}
+			<br>
+			<input type="submit" value="Göndər"/>
+		</form>
+	</center>
+		
+{% endblock %}

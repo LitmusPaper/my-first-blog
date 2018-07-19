@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Ana Səhifə {% endblock %}
+{% block link %} Ana Səhifə {% endblock %}
+{% block icon %} <span class="glyphicon glyphicon-trash"></span>{% endblock %}
+{% block page %}
+
+<div class="container">
+<h1><a class="btn btn-success"href="{% url 'post:create' %}"><span class="glyphicon glyphicon-plus"></span> Post yarat</a> </h1>
+<h3 class="text-center">{% if cat_name %}
+Kateqoriya: <span class="label label-info">{{cat_name.0}}<a href="/post" > <span class="glyphicon glyphicon-remove-circle"></span></a></span><br><br>
+{% endif %}Postlar <span class="label label-success">{{ post_list_len }}</span>
+</h3><hr>
+
+
+
+<div class="panel-group">
+{% for post in post_list %}
+<div class="panel panel-default" style="display:block">
+	<div style="display:block" class="panel-heading text-center"><p class="lead"><a style="display:block" href="{% url 'post:detail' post.slug %}">{{post.title}}</a></p></div>
+	<div class="panel-body"><p class="text-info"><small>{{post.created_time}}</small>
+		Kateqoriya: {% for cat in post.category.all %} {{cat}} {% endfor %}<br>
+	{{ post.post }}</p>
+	</div></div>
+{% endfor %}
+
+</div>
+</div>
+{% endblock %}

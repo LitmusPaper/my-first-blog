@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+{% block page %}
+
+{% for cat in post_list %}
+{{cat}}
+{% endfor %}
+
+{% endblock %}
