@@ -2,6 +2,12 @@ from django.db import models
 from django import forms
 from django.utils.text import slugify
 import random
+from ckeditor.fields import RichTextField
+from django.contrib.auth.models import User
+
+def upload_to(instance, filename):
+	return '%s/%s/%s'%('post',instance.slug,filename)
+
 
 class Category(models.Model):
 	name=models.CharField(max_length=50,verbose_name='Kateqoriya')
@@ -14,10 +20,11 @@ class Category(models.Model):
 		verbose_name_plural='Kateqoriyalar'
 
 class Post(models.Model):
+	author=models.ForeignKey(User, verbose_name='Müəllif',related_name='author')
 	title=models.CharField(max_length=120, blank=False,verbose_name='Başlıq')
 	slug=models.SlugField(max_length=120,default='', unique=True, null=False,verbose_name='Slug title', editable=False)
-	post=models.TextField(verbose_name='Məqalə')
-	img= models.ImageField(blank=True, verbose_name='Post img')
+	post=RichTextField(verbose_name='Məqalə')
+	img= models.ImageField(blank=True, verbose_name='Post img',upload_to=upload_to)
 	draft=models.BooleanField(default=False)
 	category=models.ManyToManyField(Category,verbose_name='Kateqoriya')
 	created_time=models.DateTimeField(auto_now_add=True)
@@ -28,6 +35,7 @@ class Post(models.Model):
 	
 	def get_slug(self):
 		return self.slug
+	
 	def unique_slug(self, new_slug, orginal_slug, index):
 		if Post.objects.filter(slug=new_slug):
 			new_slug='%s-%s' %(orginal_slug,index)
@@ -51,4 +59,20 @@ class Post(models.Model):
 	class Meta:
 		verbose_name='Postlar'
 		verbose_name_plural='Postlar'
+		ordering=['-created_time']
+		
+class Comment(models.Model):
+	post=models.ForeignKey(Post, verbose_name='comment',related_name='comment')
+	name=models.CharField(max_length=120,verbose_name='Ad Soyad')
+	text=models.TextField(verbose_name='Şərh',max_length=1200)
+	date=models.DateTimeField(auto_now_add=True)
+	
+	class Meta:
+		verbose_name='Şərh'
+		verbose_name_plural='Şərhlər'
+		ordering=['-date']
+	
+	
+	def __str__(self):
+		return '%s - %s'%(self.post,self.name)
 

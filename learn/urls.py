@@ -22,7 +22,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^$', index),
-	url(r'^post/', include('post.urls',namespace='post'))
+	url(r'^post/', include('post.urls',namespace='post')),
+	url(r'^users/', include('users.urls',namespace='users'))
  ]
  
 urlpatterns +=static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

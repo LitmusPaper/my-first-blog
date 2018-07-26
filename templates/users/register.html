@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block page %}
+<h2 class="page-header">Register</h2>
+<div class="col-lg-6 col-lg-offset-1">
+<form action="" method="post">
+	{% csrf_token %}
+	{{form.as_p}}<br>
+
+<input type="submit" value="Register" class="btn btn-success"/>
+</form>
+
+</div>
+
+{% endblock %}

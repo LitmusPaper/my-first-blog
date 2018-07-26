@@ -26,6 +26,7 @@ SECRET_KEY = '93=qrmwdys07fnbjxajiodlx01y_mi2oxxq27mqetxwpvmj)za'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+#LOGIN_REDIRECT_URL = 'post:index'
 
 # Application definition
 
@@ -37,8 +38,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'post',
-	'jquery'
+	'jquery',
+	'django_cleanup',
+	'ckeditor',
+	'users'
 ]
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+		'width':'auto',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],['Undo','Redo'],['Styles', 'Format', 'Font', 'FontSize'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat','Image']]
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -5,25 +5,70 @@
 {% block icon %} <span class="glyphicon glyphicon-trash"></span>{% endblock %}
 {% block page %}
 
-<div class="container">
-<h1><a class="btn btn-success"href="{% url 'post:create' %}"><span class="glyphicon glyphicon-plus"></span> Post yarat</a> </h1>
+
+
+
+<div class="container-fluid">
+
 <h3 class="text-center">{% if cat_name %}
-Kateqoriya: <span class="label label-info">{{cat_name.0}}<a href="/post" > <span class="glyphicon glyphicon-remove-circle"></span></a></span><br><br>
-{% endif %}Postlar <span class="label label-success">{{ post_list_len }}</span>
-</h3><hr>
+Kateqoriya: <span class="label label-info">{{cat_name.0}}<a href="/post{% if request.GET.key %}?key={{request.GET.key}}&{% else%}?{% endif %}{% if request.GET.list %}list={{request.GET.list}}{% endif %}" > <span class="glyphicon glyphicon-remove-circle"></span></a></span><br><br>
+{% endif %}
+{% if key %}
+Axtarış: <span class="label label-info">{{key}}<a href="/post{% if request.GET.cat_id %}?cat_id={{request.GET.cat_id}}&{% else%}?{% endif %}{% if request.GET.list %}list={{request.GET.list}}{% endif %}" > <span class="glyphicon glyphicon-remove-circle"></span></a></span><br><br>
+{% endif %}
+Postlar <span class="label label-success">{{ post_list|length }}/{{post_list.paginator.count}}</span>
+</h3>
+{% if filter_form %}
+<form class="form-inline" method='get'>
+<div class="form-group">
+{% if request.GET.key %} <input type="hidden" name="key" value="{{ request.GET.key}}"/>{% endif %}
+{% if request.GET.cat_id %} <input type="hidden" name="cat_id" value="{{ request.GET.cat_id}}"/>{% endif %}
+{%for field in filter_form %}
+{{field}}
+{% endfor %}
+<input type="submit" value="OK" class="btn btn-info"/></div>
+</form>{% endif %}<hr>
 
 
 
 <div class="panel-group">
 {% for post in post_list %}
 <div class="panel panel-default" style="display:block">
-	<div style="display:block" class="panel-heading text-center"><p class="lead"><a style="display:block" href="{% url 'post:detail' post.slug %}">{{post.title}}</a></p></div>
+	<div style="display:block" class="panel-heading text-center"><p class="lead"><a href="{% url 'post:detail' post.slug %}">{{post.title}}</a>{% if post.draft %}
+	<span class='text-right'>|D</span>
+	{% endif %}</p></div>
 	<div class="panel-body"><p class="text-info"><small>{{post.created_time}}</small>
-		Kateqoriya: {% for cat in post.category.all %} {{cat}} {% endfor %}<br>
-	{{ post.post }}</p>
+		Kateqoriya: {% for cat in post.category.all %} {{cat}} {% endfor %}<br></p>
+     {{ post.post|safe|truncatewords_html:30 }}
 	</div></div>
+	{% empty %}
+		<div class="alert alert-warning text-center">
+			<strong>Post Yoxdur!</strong>
+		</div>
+		
 {% endfor %}
+</div>
+{% if post_list.has_other_pages %}
+  <ul class="pagination">
+    {% if post_list.has_previous %}
+      <li><a href="?page={{ post_list.previous_page_number }}{% if request.GET.list %}&list={{ request.GET.list}}{% endif %}{% if request.GET.key %}&key={{ request.GET.key}}{% endif %}{% if request.GET.cat_id %}&cat_id={{ request.GET.cat_id}}{% endif %}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in post_list.paginator.page_range %}
+      {% if post_list.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}{% if request.GET.list %}&list={{ request.GET.list}}{% endif %}{% if request.GET.key %}&key={{ request.GET.key}}{% endif %}{% if request.GET.cat_id %}&cat_id={{ request.GET.cat_id}}{% endif %}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if post_list.has_next %}
+      <li><a href="?page={{ post_list.next_page_number }}{% if request.GET.list %}&list={{ request.GET.list}}{% endif %}{% if request.GET.key %}&key={{ request.GET.key}}{% endif %}{% if request.GET.cat_id %}&cat_id={{ request.GET.cat_id}}{% endif %}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
 
-</div>
-</div>
 {% endblock %}

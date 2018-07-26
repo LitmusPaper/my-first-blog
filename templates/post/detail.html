@@ -8,24 +8,60 @@
 		
 		<div class="container-fluid ">
 		<div class="text-center">
-			<h1 class="page-header"> {{ post.title }} <br></h1>
-			<form action="/post/filter/" method="post" >
-			{% csrf_token %}
-			{% for cat in post.category.all %} <input type='hidden' name="catfilter" value="{{cat.id}}"/> <input type="submit" value="{{ cat }}" class="btn btn-info"/>{% endfor %}</form><hr><p class="small">{{ post.created_time|timesince }} əvvəl<br>
+			<h1 class="page-header"> {{ post.title }}<br></h1>
+			<form action="{% url 'post:index' %}" method="get" >
+			{% for cat in post.category.all %} <input type='hidden' name="cat_id" value="{{cat.id}}"/> <input type="submit" value="{{ cat }}" class="btn btn-info"/>{% endfor %}</form><hr><p class="small">{{ post.created_time|timesince }} əvvəl
 			{% if post.created_time != post.updated_time %}
-				{{post.updated_time|timesince  }} əvvəl redaktə olunub  
-			{% endif %} </p>
-			<p class="lead"> {{ post.post }} </p></div>
-			
-				<img src="{{post.get_img_or_default}}" class="img-responsive"/><br>
-			
+				<br>{{post.updated_time|timesince  }} əvvəl redaktə olunub  
+			{% endif %}</p>Müəllif: <strong><a href="{% url 'users:profile' post.author_id %}">{{post.author}}</a></strong> 
+			<div class="text-justify"> {{ post.post|safe }} </div></div>
+			<div class="media-center">
+				<img src="{{post.get_img_or_default}}" class="img-responsive" style="max-width: 100%; display: block; height: auto;"/></div><br>
+			{% if request.user.is_authenticated %}
 			<a class="btn btn-info" href="{% url 'post:update' post.slug %} "><span class="glyphicon glyphicon-pencil"></span>  Postu dəyiş</a>
 			
 			<button class="btn btn-danger" data-toggle="collapse" data-target="#demo"><span class="glyphicon glyphicon-trash"></span> Sil</button>
 			<div id="demo" class="collapse">
 			<p class="lead text-center">əminsiz?<br>
 			<a class="btn btn-danger" href="{% url 'post:delete' post.slug %} "> Postu Sil</a></p>
-			</div>
+			</div>{% endif %}
 		</div>
-		
+		<div class="container-fluid">
+			<h2 class="page-header"> Şərhlər ({{post.comment.all|length}})</h2>
+			<div class="row">
+			<div class='col-lg-10 col-lg-offset-1'>
+			<form action="{% url 'post:detail' post.slug %}" method="post">
+				{% csrf_token %}
+				
+				{% for field in form %}
+					<div class="form-group">
+				
+				{{ field.label_tag }}<br>
+				{{field.errors}}
+				{{field}} <br>
+				{% endfor %}
+				<input type="submit" class="btn btn-info" value="Yaz"/></div>
+			</form></div>
+			
+			<div class="col-lg-12">
+			<div class="panel-group">
+				
+				{% for comments in post.comment.all %}
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3> {{comments.name}}<small> {{comments.date}}</small></h3>
+						</div>
+						<div class="panel-body">
+							<p>{{comments.text}}</p>
+					</div>
+					</div>
+					{% empty %}
+						<div class="alert alert-info text-center">
+							İlk şərhi <strong>SƏN</strong> yaz 
+						</div>
+					{% endfor %}
+					</div>
+				
+				</div>
+		</div>
 {% endblock %}
