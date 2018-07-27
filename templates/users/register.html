@@ -3,9 +3,14 @@
 {% block page %}
 <h2 class="page-header">Register</h2>
 <div class="col-lg-6 col-lg-offset-1">
+
 <form action="" method="post">
 	{% csrf_token %}
-	{{form.as_p}}<br>
+	{% for field in form %}
+		{{field.label_tag}}
+		{{field}}
+		{{field.errors}}
+	{% endfor %}<br>
 
 <input type="submit" value="Register" class="btn btn-success"/>
 </form>

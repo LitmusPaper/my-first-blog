@@ -38,18 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'post',
-<<<<<<< HEAD
 	'jquery',
 	'django_cleanup',
 	'ckeditor',
 	'users'
-=======
-	
->>>>>>> c0d1fc480dec6df0472cee657b2d7419c4dc96d7
 ]
 
 CKEDITOR_CONFIGS = {
-    'default': {
+	'default': {
         'toolbar': 'Custom',
 		'width':'auto',
         'toolbar_Custom': [
