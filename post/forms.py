@@ -22,19 +22,22 @@ class PostFilterForm(forms.Form):
 class CommentForm(forms.ModelForm):
 	class Meta:
 		model=Comment
-		fields=['name','text']
+		fields=['text']
 		error_messages = {
             'text': {
                 'max_length': ("Bu şərh çox uzundur. Maksimim 1200 simvol"),
             },
-			'name':{
-				'max_length':("Bu ad çox uzundur. Maksimim 120 simvol"),
-			},
         }
-	
+	'''
+	def clean_text(self):
+		text=self.cleaned_data['text']
+		com_list=Comment.objects.filter(sender=user)
+		com_list=Comment.objects.filter(text=text)
+		if len(com_list) >0:
+			raise forms.ValidationError('Spam!')
+		return text'''
 	def __init__(self,*args,**kwargs):
 		super(CommentForm,self).__init__(*args, **kwargs)
-		self.fields['name'].widget.attrs['class']='form-control'
 		self.fields['text'].widget.attrs['class']='form-control'
 	"""
 	def clean_name(self):

@@ -10,9 +10,10 @@ from post.models import Post,Category
 # Create your views here.
 
 def profile(request,pk):
-	user=User.objects.get(pk=pk)
+	user_list=User.objects.all()
+	user=user_list.get(pk=pk)
 	posts_list=Post.objects.filter(author_id=pk)
-	return render(request,'users/profile.html', context={'user':user,'post_list':posts_list})
+	return render(request,'users/profile.html', context={'user':user,'post_list':posts_list,'user_list':user_list})
 
 def register(request):
 	if request.user.is_authenticated():
@@ -31,20 +32,24 @@ def register(request):
 	return render(request,'users/register.html', context={'form':form})
 	
 def user_login(request):
+	next=request.GET.get('next', '')
 	if request.user.is_authenticated():
 		return HttpResponseRedirect(reverse('post:index'))
 	form=LoginForm(request.POST or None)
 	if form.is_valid():
+		next=request.POST.get('next', '')
 		username=form.cleaned_data['username']
 		password=form.cleaned_data['password']
 		user = authenticate(username=username, password=password)
 		if user:
 			login(request,user)
+			if next != '':
+				return HttpResponseRedirect(next)
 			return HttpResponseRedirect(reverse('post:index'))
 		else:
 			error='İstifadəçi adı/email və ya parol səhvdir'
 			return render(request,'users/login.html', context={'form':form,'error':error})
-	return render(request,'users/login.html', context={'form':form})
+	return render(request,'users/login.html', context={'form':form,'next':next})
 
 def user_logout(request):
 	logout(request)

@@ -4,6 +4,8 @@ from django.utils.text import slugify
 import random
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
+#from .models import User
+
 
 def upload_to(instance, filename):
 	return '%s/%s/%s'%('post',instance.slug,filename)
@@ -61,9 +63,10 @@ class Post(models.Model):
 		verbose_name_plural='Postlar'
 		ordering=['-created_time']
 		
+		
 class Comment(models.Model):
 	post=models.ForeignKey(Post, verbose_name='comment',related_name='comment')
-	name=models.CharField(max_length=120,verbose_name='Ad Soyad')
+	sender=models.ForeignKey(User, verbose_name='sender',related_name='sender')
 	text=models.TextField(verbose_name='Şərh',max_length=1200)
 	date=models.DateTimeField(auto_now_add=True)
 	
@@ -71,8 +74,14 @@ class Comment(models.Model):
 		verbose_name='Şərh'
 		verbose_name_plural='Şərhlər'
 		ordering=['-date']
-	
-	
+	def save(self,*args, **kwargs):
+		text=self.text
+		com_list=Comment.objects.filter(sender=self.sender)
+		com_list=com_list.filter(text=text)
+		if len(com_list) ==0:
+			super(Comment,self).save(*args,**kwargs)
+		
+		
 	def __str__(self):
-		return '%s - %s'%(self.post,self.name)
+		return '%s - %s'%(self.post,self.sender)
 

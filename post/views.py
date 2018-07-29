@@ -1,10 +1,12 @@
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,reverse,get_object_or_404,Http404
-from .models import Post,Category
+from .models import Post,Category, Comment
 from .forms import PostForm,PostFilterForm, CommentForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import django
 import jquery
+from time import sleep
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
 def form_test(request):
@@ -20,9 +22,9 @@ def form_test(request):
 def index(request):
 	return HttpResponseRedirect(reverse('post:index'))
 
+@login_required(login_url='/users/user_login/')
 def post_create(request):
-	if not request.user.is_authenticated():
-		raise Http404
+	
 	post_form=PostForm()
 	if request.method == "POST":
 		post_form=PostForm(request.POST, files=request.FILES or None)
@@ -34,9 +36,9 @@ def post_create(request):
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
 	return render(request,'post/post_create.html',context={'form':post_form})
 
+@login_required(login_url='/users/user_login/')
 def post_update(request,slug):
-	if not request.user.is_authenticated():
-		raise Http404
+	
 	post=get_object_or_404(Post,slug=slug)
 	form=PostForm(data=request.POST or None, instance=post, files=request.FILES or None)
 	if request.method == 'POST':
@@ -45,13 +47,21 @@ def post_update(request,slug):
 			messages.success(request,'Post redaktə olundu!')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':form.instance.slug}))
 	return render(request, 'post/update.html', context={'form':form})
-	
+
+@login_required(login_url='/users/user_login/')
 def post_delete(request,slug):
-	if not request.user.is_authenticated():
-		raise Http404
+
 	post = get_object_or_404(Post,slug=slug)
 	post.delete()
 	messages.success(request,'Post silindi!',extra_tags='danger')
+	return HttpResponseRedirect(reverse('post:index'))
+
+@login_required(login_url='/users/user_login/')
+def comment_delete(request,pk):
+
+	comment = get_object_or_404(Comment,pk=pk)
+	comment.delete()
+	messages.success(request,'comment silindi!',extra_tags='danger')
 	return HttpResponseRedirect(reverse('post:index'))
 	
 def post_list(request):
@@ -88,7 +98,7 @@ def post_list(request):
 		posts_list = paginator.page(paginator.num_pages)
 	return render(request,'post/post_list.html', context={'post_list':posts_list,'filter_form':filter_form,'cat_name':cat_name,'key':key})
 
-
+#@login_required(login_url='/users/user_login/')
 def post_detail(request,slug):
 	#post=Post.objects.get(pk=pk)  # Ən sadə üsul
 	post=get_object_or_404(Post, slug=slug)
@@ -96,6 +106,7 @@ def post_detail(request,slug):
 	if comment_form.is_valid():
 		comment=comment_form.save(commit=False)
 		comment.post=post
+		comment.sender=request.user
 		comment.save()
 		comment_form=CommentForm()
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))

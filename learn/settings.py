@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','LitmusPaper.pythonanywhere.com']
 
+#AUTH_USER_MODEL = 'users.User'
+
 #LOGIN_REDIRECT_URL = 'post:index'
 
 # Application definition

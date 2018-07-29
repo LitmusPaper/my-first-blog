@@ -5,8 +5,11 @@
 {% block link %} Profil{% endblock %}
 
 {% block page %}
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-8">
 <h2 class="page-header">{{ user.username}}<small> {{ user.date_joined|timesince}} əvvəl bizə qatılıb</small></h2>
-<div class="col-lg-12">
+
 <p class="lead"> {{user.get_full_name}}</p>
 <p> Sonuncu dəfə {{user.last_login|timesince}} əvvəl daxil olub</p>
 <p>Email: {{user.email}}</p>
@@ -26,7 +29,21 @@
 {% endfor %}
 </tbody>
 </table>
-</table>
 <hr>
+</div>
+</div>
+<div class="col-lg-4">
+<h2 class="page-header">Digər istifadəçilər</h2>
+<table class="table table-striped text-center"> 
+<tbody>
+{% for user in user_list%}
+<tr>
+<td><a href="{% url 'users:profile' user.id %}"><h4>{{user}}</h4></a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
 </div>
 {% endblock %}

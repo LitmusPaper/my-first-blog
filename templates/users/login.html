@@ -7,10 +7,11 @@
 <div class="alert alert-danger fade in text-center">
 				{{error}}<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 				</div>{% endif %}
+				<div class="alert alert-warning text-center">Hesabınız Yoxdur? <a href="{%url 'users:register'%}">Qeydiyyat</a></div>
 <form action="{% url 'users:user_login' %}" method="post">
 	{% csrf_token %}
 	{{form.as_p}}<br>
-
+<input type="hidden" name='next' value='{{next}}'/>
 <input type="submit" value="Login" class="btn btn-success"/>
 </form>
 
