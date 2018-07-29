@@ -18,8 +18,7 @@ def form_test(request):
 	
 
 def index(request):
-	ver= django.get_version()
-	return HttpResponse(ver)
+	return HttpResponseRedirect(reverse('post:index'))
 
 def post_create(request):
 	if not request.user.is_authenticated():
