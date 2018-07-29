@@ -54,7 +54,7 @@ class Post(models.Model):
 	def get_img_or_default(self):
 		if self.img and hasattr(self.img,'url'):
 			return self.img.url
-		return '/static/img/default.png'
+		return '/staticfiles/img/default.png'
 	
 	class Meta:
 		verbose_name='Postlar'

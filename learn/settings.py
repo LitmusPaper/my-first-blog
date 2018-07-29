@@ -25,7 +25,7 @@ SECRET_KEY = '93=qrmwdys07fnbjxajiodlx01y_mi2oxxq27mqetxwpvmj)za'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['LitmusPaper.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1','LitmusPaper.pythonanywhere.com']
 
 #LOGIN_REDIRECT_URL = 'post:index'
 
@@ -142,10 +142,10 @@ USE_TZ = True
 STATIC_URL = '/staticfiles/'
 MEDIA_URL='/media/'
 
-'''
+
 STATICFILES_DIRS = [
-	os.path.join(BASE_DIR,'static')
+	os.path.join(BASE_DIR,'staticfiles')
 ]
-'''
-STATIC_ROOT= '/home/LitmusPaper/my-first-blog/staticfiles'
-MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
+STATIC_ROOT= '/staticfiles/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'media/')
