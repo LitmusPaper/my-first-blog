@@ -8,7 +8,7 @@
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-8">
-<h2 class="page-header">{{ user.username}}<small> {{ user.date_joined|timesince}} əvvəl bizə qatılıb</small>
+<h2 class="page-header"><button class="btn btn-info">{{user.pk}}</button>{{ user.username}}<small> {{ user.date_joined|timesince}} əvvəl bizə qatılıb</small>
 {% if user.username == request.user.username %}
 <a href="{% url 'users:update' user.pk %}" class="btn btn-default close"><span class="glyphicon glyphicon-pencil"></span></a>{% endif %}</h2>
 <div class="row">
