@@ -1,6 +1,7 @@
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,reverse,get_object_or_404,Http404
 from django.contrib import messages
-from .forms import RegisterForm,LoginForm,ProfileForm,UserForm
+from .forms import RegisterForm,LoginForm,ProfileForm,UserForm,CustomPasswordForm
+from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.contrib.auth import login, authenticate, logout
@@ -33,7 +34,20 @@ def update(request,pk):
 		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':pk}))
 	return render(request,'users/update.html', context={'profile_form':profile_form,'user_form':user_form,'user':user})
 
-
+@login_required(login_url='/users/user_login/')
+def change_password(request):
+	if request.method == 'POST':
+		form = CustomPasswordForm(request.user, request.POST)
+		if form.is_valid():
+			user = form.save()
+			update_session_auth_hash(request, user)  # Important!
+			messages.success(request, 'Parolunuz Dəyişdirildi')
+		else:
+			messages.error(request, 'Xanaları düzgün doldurun', extra_tags='danger')
+	else:
+		form = CustomPasswordForm(request.user)
+	return render(request,'users/change_password.html', context={'form':form})
+		
 def register(request):
 	if request.user.is_authenticated():
 		return HttpResponseRedirect(reverse('post:index'))

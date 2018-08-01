@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+
 from .models import UserProfile
 
 class RegisterForm(UserCreationForm):
@@ -72,3 +73,9 @@ class UserForm(forms.ModelForm):
 		self.fields['last_name'].widget.attrs['class']='form-control'
 		self.fields['email'].widget.attrs['class']='form-control'
 		
+class CustomPasswordForm(PasswordChangeForm):
+	def __init__(self, *args, **kwargs):
+		super(CustomPasswordForm,self).__init__(*args,**kwargs)
+		self.fields['old_password'].widget.attrs['class']='form-control'
+		self.fields['new_password1'].widget.attrs['class']='form-control'
+		self.fields['new_password2'].widget.attrs['class']='form-control'
