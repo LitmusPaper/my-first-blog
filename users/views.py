@@ -23,14 +23,14 @@ def update(request,pk):
 	user=User.objects.get(pk=pk)
 	if user != request.user:
 		return HttpResponseRedirect(reverse('users:update', kwargs={'pk':request.user.pk}))
-	profile=UserProfile.objects.filter(user_id=pk).first()
+	profile=UserProfile.objects.get.filter(user_id=pk)
 	user=User.objects.filter(pk=pk).first()
 	profile_form=ProfileForm(data=request.POST or None, instance=profile)
 	user_form=UserForm(data=request.POST or None, instance=user)
 	if user_form.is_valid() and profile_form.is_valid():
 		user_form.save(commit='True')
 		profile_form.save(commit='False')
-		profile_form.user_id=pk
+		#profile_form.user_id=pk
 		profile_form.save()
 		messages.success(request,'Profil redaktə olundu!')
 		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':pk}))
