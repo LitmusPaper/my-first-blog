@@ -29,7 +29,9 @@ def update(request,pk):
 	user_form=UserForm(data=request.POST or None, instance=user)
 	if user_form.is_valid() and profile_form.is_valid():
 		user_form.save(commit='True')
-		profile_form.save(commit='True')
+		profile_form.save(commit='False')
+		profile_form.user_id=pk
+		profile_form.save()
 		messages.success(request,'Profil redaktə olundu!')
 		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':pk}))
 	return render(request,'users/update.html', context={'profile_form':profile_form,'user_form':user_form,'user':user})
