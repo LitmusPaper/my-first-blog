@@ -11,6 +11,7 @@
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-12">
+
 <h3 class="text-center">{% if cat_name %}
 Kateqoriya: <span class="label label-info">{{cat_name.0}}<a href="/post{% if request.GET.key %}?key={{request.GET.key}}&{% else%}?{% endif %}{% if request.GET.list %}list={{request.GET.list}}{% endif %}" > <span class="glyphicon glyphicon-remove-circle"></span></a></span><br><br>
 {% endif %}

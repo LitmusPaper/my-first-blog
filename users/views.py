@@ -24,7 +24,7 @@ def update(request,pk):
 	if user != request.user:
 		return HttpResponseRedirect(reverse('users:update', kwargs={'pk':request.user.pk}))
 	profile=UserProfile.objects.get(user_id=pk)
-	profile_form=ProfileForm(data=request.POST or None, instance=profile)
+	profile_form=ProfileForm(data=request.POST or None, instance=profile,files=request.FILES or None)
 	user_form=UserForm(data=request.POST or None, instance=user)
 	if user_form.is_valid() and profile_form.is_valid():
 		user_form.save(commit='True')

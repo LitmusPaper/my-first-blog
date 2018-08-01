@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import os
 
 # Create your models here.
 def upload_to(instance, filename):
-	return '%s/%s/%s'%('users',instance.user.username,filename)
+	filename, file_extension = os.path.splitext(filename)
+	return '%s/%s/avatar%s'%('users',instance.user.username,file_extension)
 
 class UserProfile(models.Model):
 	MALE='1'

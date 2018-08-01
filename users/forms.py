@@ -49,7 +49,7 @@ class LoginForm(forms.Form):
 class ProfileForm(forms.ModelForm):
 	class Meta:
 		model=UserProfile
-		fields=('bio','tel','tarix','sex')
+		fields=('bio','tel','tarix','sex','photo')
 	
 	
 	def __init__(self, *args, **kwargs):
@@ -58,6 +58,7 @@ class ProfileForm(forms.ModelForm):
 		self.fields['tel'].widget.attrs['class']='form-control'
 		self.fields['tarix'].widget.attrs['class']='form-control'
 		self.fields['sex'].widget.attrs['class']='form-control'
+		self.fields['photo'].widget.attrs['class']='form-control'
 
 class UserForm(forms.ModelForm):
 	class Meta:
@@ -70,3 +71,4 @@ class UserForm(forms.ModelForm):
 		self.fields['first_name'].widget.attrs['class']='form-control'
 		self.fields['last_name'].widget.attrs['class']='form-control'
 		self.fields['email'].widget.attrs['class']='form-control'
+		
