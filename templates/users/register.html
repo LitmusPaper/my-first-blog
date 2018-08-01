@@ -3,7 +3,7 @@
 {% block page %}
 <h2 class="page-header">Register</h2>
 <div class="col-lg-6 col-lg-offset-1">
-
+<div class="alert alert-warning text-center">Hesabın Var? <a href="{%url 'users:user_login'%}">Daxil ol</a></div>
 <form action="" method="post">
 	{% csrf_token %}
 	{% for field in form %}

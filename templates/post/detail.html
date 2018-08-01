@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block title %} {{post.title}} {% endblock %}
-{% block link %} {{post.title}} {% endblock %}
+
 {% block icon %}<span class="glyphicon glyphicon-ok"></span> {%endblock%}
 {% block page %}
 		
@@ -17,7 +17,7 @@
 			<div class="text-justify"> {{ post.post|safe }} </div></div>
 			<div class="media-center">
 				<img src="{{post.get_img_or_default}}" class="img-responsive" style="max-width: 100%; display: block; height: auto;"/></div><br>
-			{% if request.user.is_authenticated %}
+			{% if request.user.is_staff or request.user == post.author %}
 			<a class="btn btn-info" href="{% url 'post:update' post.slug %} "><span class="glyphicon glyphicon-pencil"></span>  Postu dəyiş</a>
 			
 			<button class="btn btn-danger" data-toggle="collapse" data-target="#demo"><span class="glyphicon glyphicon-trash"></span> Sil</button>

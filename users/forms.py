@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from .models import UserProfile
 
 class RegisterForm(UserCreationForm):
 	class Meta:
@@ -43,3 +44,29 @@ class LoginForm(forms.Form):
 			return username
 		else:
 			return username
+
+
+class ProfileForm(forms.ModelForm):
+	class Meta:
+		model=UserProfile
+		fields=('bio','tel','tarix','sex')
+	
+	
+	def __init__(self, *args, **kwargs):
+		super(ProfileForm,self).__init__(*args, **kwargs)
+		self.fields['bio'].widget.attrs['class']='form-control'
+		self.fields['tel'].widget.attrs['class']='form-control'
+		self.fields['tarix'].widget.attrs['class']='form-control'
+		self.fields['sex'].widget.attrs['class']='form-control'
+
+class UserForm(forms.ModelForm):
+	class Meta:
+		model= User
+		fields = ('username','first_name','last_name','email')
+		
+	def __init__(self, *args, **kwargs):
+		super(UserForm,self).__init__(*args, **kwargs)
+		self.fields['username'].widget.attrs['class']='form-control'
+		self.fields['first_name'].widget.attrs['class']='form-control'
+		self.fields['last_name'].widget.attrs['class']='form-control'
+		self.fields['email'].widget.attrs['class']='form-control'

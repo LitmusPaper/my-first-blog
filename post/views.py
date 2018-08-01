@@ -32,6 +32,7 @@ def post_create(request):
 			crepost=post_form.save(commit=False)
 			crepost.author=request.user
 			crepost.save()
+			post_form=PostForm()
 			messages.success(request,'Post Yaradıldı')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
 	return render(request,'post/post_create.html',context={'form':post_form})
@@ -62,7 +63,7 @@ def comment_delete(request,pk):
 	comment = get_object_or_404(Comment,pk=pk)
 	comment.delete()
 	messages.success(request,'comment silindi!',extra_tags='danger')
-	return HttpResponseRedirect(reverse('post:index'))
+	return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	
 def post_list(request):
 	filter_form=PostFilterForm(request.GET or None)
@@ -89,7 +90,7 @@ def post_list(request):
 			posts_list=posts_list.filter(draft=False)
 		else:
 			pass
-	paginator = Paginator(posts_list, 3)
+	paginator = Paginator(posts_list, 4)
 	try:
 		posts_list = paginator.page(page)
 	except PageNotAnInteger:

@@ -39,9 +39,9 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">{% block link %} {% endblock %}<span class="sr-only">(current)</span></a></li>
+        <!--<li class="active"><a href="#">{% block link %} {% endblock %}<span class="sr-only">(current)</span></a></li> -->
 		{% if request.user.is_authenticated %}
-		<li><a href="{% url 'users:profile' request.user.pk %}">{{request.user.username}}<span class="sr-only">(current)</span></a></li>
+		
 		{%endif%}
        
       </ul>
@@ -56,6 +56,7 @@
       <ul class="nav navbar-nav navbar-right">
 	  {% if request.user.is_authenticated %}
         <li><form action="{% url 'post:create' %}" ><input type="submit" class="btn btn-success navbar-btn" value="Post yarat"/></form> </li>
+		<li><a href="{% url 'users:profile' request.user.pk %}">{{request.user.username}}</a></li>
 		<li><a href="{% url 'users:user_logout' %}">Log out</a></li>
 		{% else %}
 			<li><a href="{% url 'users:user_login' %}">Log in</a></li>
@@ -66,6 +67,9 @@
   </div><!-- /.container-fluid -->
 </nav>
 
+
+
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-0"> 
 {% if messages %}
 
 			{% for message in messages %}
@@ -75,7 +79,6 @@
 				{% endfor %} 
 		 {% endif %}
 
-<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-0"> 
 {% block page %}
 {% endblock %}
 

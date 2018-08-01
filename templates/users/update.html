@@ -1,0 +1,18 @@
+ {% extends 'base.html' %}
+
+{% block page %}
+<h2 class="page-header">Profil Redaktə: <a href="{% url 'users:profile' request.user.pk %}">{{request.user.username}}</a></h2>
+<div class="col-lg-6 col-lg-offset-1">
+{% if error %}
+<div class="alert alert-danger fade in text-center">
+				{{error}}<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				</div>{% endif %}
+		<form action="" method="post">
+	{% csrf_token %}
+	{{user_form.as_p}}
+	{{profile_form.as_p}}<br>
+	
+<input type="submit" value="Dəyiş" class="btn btn-success"/>
+</form>
+</div>
+{% endblock %}
