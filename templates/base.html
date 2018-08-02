@@ -52,7 +52,7 @@
         <!--<li class="active"><a href="#">{% block link %} {% endblock %}<span class="sr-only">(current)</span></a></li> -->
 		{% if request.user.is_authenticated %}
 		<li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="{% url 'users:profile' request.user.pk %}"><img style="width:20px;height:20px;" src="{{user.userprofile.photo.url}}"/> {{request.user.username}}
+        <a class="dropdown-toggle" data-toggle="dropdown" href="{% url 'users:profile' request.user.pk %}"><img style="width:20px;height:20px;" src="{{request.user.userprofile.photo.url}}"/> {{request.user.username}}
         <span class="caret"></span></a>
         <ul class="dropdown-menu">
           <li><a href="{% url 'users:profile' request.user.pk %}"><span class="glyphicon glyphicon-user"></span> Profil</a></li>

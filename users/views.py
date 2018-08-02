@@ -20,19 +20,16 @@ def profile(request,pk):
 	return render(request,'users/profile.html', context={'user':user,'post_list':posts_list,'user_list':user_list})
 
 @login_required(login_url='/users/user_login/')
-def update(request,pk):
-	user=User.objects.get(pk=pk)
-	if user != request.user:
-		return HttpResponseRedirect(reverse('users:update', kwargs={'pk':request.user.pk}))
-	profile=UserProfile.objects.get(user_id=pk)
+def update(request):
+	profile=UserProfile.objects.get(user_id=request.user.pk)
 	profile_form=ProfileForm(data=request.POST or None, instance=profile,files=request.FILES or None)
-	user_form=UserForm(data=request.POST or None, instance=user)
+	user_form=UserForm(data=request.POST or None, instance=request.user)
 	if user_form.is_valid() and profile_form.is_valid():
 		user_form.save(commit='True')
 		profile_form.save(commit='True')
 		messages.success(request,'Profil redaktə olundu!')
-		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':pk}))
-	return render(request,'users/update.html', context={'profile_form':profile_form,'user_form':user_form,'user':user})
+		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':request.user.pk}))
+	return render(request,'users/update.html', context={'profile_form':profile_form,'user_form':user_form})
 
 @login_required(login_url='/users/user_login/')
 def change_password(request):
