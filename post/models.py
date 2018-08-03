@@ -85,3 +85,15 @@ class Comment(models.Model):
 	def __str__(self):
 		return '%s - %s'%(self.post,self.sender)
 
+class Reply(models.Model):
+	comment=models.ForeignKey(Comment,verbose_name='reply', related_name='reply')
+	rsender=models.ForeignKey(User,verbose_name='sender',related_name='rsender')
+	rtext=models.TextField(verbose_name='Cavab', max_length=1200)
+	date=models.DateTimeField(auto_now_add=True)
+	
+	class Meta:
+		verbose_name='Cavab'
+		verbose_name_plural='Cavablar'
+		ordering=['-date']
+	def __str__(self):
+		return '%s - %s'%(self.rsender, self.comment)

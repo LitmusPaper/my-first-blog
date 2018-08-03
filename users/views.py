@@ -78,7 +78,7 @@ def user_login(request):
 			return HttpResponseRedirect(reverse('post:index'))
 		else:
 			error='İstifadəçi adı/email və ya parol səhvdir'
-			return render(request,'users/login.html', context={'form':form,'error':error})
+			return render(request,'users/login.html', context={'form':form,'error':error,'next':next})
 	return render(request,'users/login.html', context={'form':form,'next':next})
 
 def user_logout(request):

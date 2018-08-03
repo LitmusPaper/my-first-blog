@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment
+from .models import Post, Comment, Reply
 
 class PostForm(forms.ModelForm):
 	class Meta:
@@ -28,23 +28,23 @@ class CommentForm(forms.ModelForm):
                 'max_length': ("Bu şərh çox uzundur. Maksimim 1200 simvol"),
             },
         }
-	'''
-	def clean_text(self):
-		text=self.cleaned_data['text']
-		com_list=Comment.objects.filter(sender=user)
-		com_list=Comment.objects.filter(text=text)
-		if len(com_list) >0:
-			raise forms.ValidationError('Spam!')
-		return text'''
+	
 	def __init__(self,*args,**kwargs):
 		super(CommentForm,self).__init__(*args, **kwargs)
 		self.fields['text'].widget.attrs['class']='form-control'
-	"""
-	def clean_name(self):
-		name=self.cleaned_data['name']
-		if not name.isalpha():
-			raise forms.ValidationError('Sadəcə hərf yazın')
-		return name
-		
-		"""
+
+class ReplyForm(forms.ModelForm):
+	class Meta:
+		model=Reply
+		fields=['rtext']
+		error_messages = {
+            'rtext': {
+                'max_length': ("Bu cavab çox uzundur. Maksimim 1200 simvol"),
+            },
+        }
 	
+	def __init__(self,*args,**kwargs):
+		super(ReplyForm,self).__init__(*args, **kwargs)
+		self.fields['rtext'].widget.attrs['class']='form-control'
+		self.fields['rtext'].widget.attrs['rows']='5'
+		#self.fields['rtext'].widget.attrs['column']='1'		

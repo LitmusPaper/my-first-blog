@@ -1,6 +1,6 @@
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,reverse,get_object_or_404,Http404
-from .models import Post,Category, Comment
-from .forms import PostForm,PostFilterForm, CommentForm
+from .models import Post,Category, Comment, Reply
+from .forms import PostForm,PostFilterForm, CommentForm, ReplyForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -39,8 +39,9 @@ def post_create(request):
 
 @login_required(login_url='/users/user_login/')
 def post_update(request,slug):
-	
 	post=get_object_or_404(Post,slug=slug)
+	if post.author!=request.user:
+		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':slug}))
 	form=PostForm(data=request.POST or None, instance=post, files=request.FILES or None)
 	if request.method == 'POST':
 		if form.is_valid:
@@ -51,18 +52,20 @@ def post_update(request,slug):
 
 @login_required(login_url='/users/user_login/')
 def post_delete(request,slug):
-
 	post = get_object_or_404(Post,slug=slug)
+	if post.author!=request.user:
+		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':slug}))
 	post.delete()
 	messages.success(request,'Post silindi!',extra_tags='danger')
 	return HttpResponseRedirect(reverse('post:index'))
 
 @login_required(login_url='/users/user_login/')
 def comment_delete(request,pk):
-
 	comment = get_object_or_404(Comment,pk=pk)
+	if request.user != comment.sender:
+		HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	comment.delete()
-	messages.success(request,'comment silindi!',extra_tags='danger')
+	messages.success(request,'Şərh silindi!',extra_tags='danger')
 	return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	
 def post_list(request):
@@ -104,6 +107,7 @@ def post_detail(request,slug):
 	#post=Post.objects.get(pk=pk)  # Ən sadə üsul
 	post=get_object_or_404(Post, slug=slug)
 	comment_form=CommentForm(request.POST or None)
+	reply_form=ReplyForm()
 	if comment_form.is_valid():
 		comment=comment_form.save(commit=False)
 		comment.post=post
@@ -111,7 +115,22 @@ def post_detail(request,slug):
 		comment.save()
 		comment_form=CommentForm()
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
-	return render(request,'post/detail.html', context={'post':post,'form':comment_form})
+	
+	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form})
+
+@login_required(login_url='/users/user_login/')
+def reply_view(request,pk):
+	comment=Comment.objects.get(pk=pk)
+	reply_form=ReplyForm(request.POST or None)
+	if reply_form.is_valid():
+		reply=reply_form.save(commit=False)
+		reply.comment=comment
+		reply.rsender=request.user
+		reply.save()
+		reply_form=ReplyForm()
+		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
+	else:
+		return HttpResponseRedirect(reverse('post:index'))
 	
 def test(request):
 	return render(request, 'base.html')

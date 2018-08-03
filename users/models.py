@@ -3,11 +3,12 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import os
+import random
 
 # Create your models here.
 def upload_to(instance, filename):
 	filename, file_extension = os.path.splitext(filename)
-	return '%s/%s/avatar%s'%('users',instance.user.username,file_extension)
+	return '%s/%s/avatar%s%s'%('users',instance.user.username,random.randrange(100,999),file_extension)
 
 class UserProfile(models.Model):
 	MALE='1'

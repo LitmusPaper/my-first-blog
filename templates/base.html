@@ -52,7 +52,7 @@
         <!--<li class="active"><a href="#">{% block link %} {% endblock %}<span class="sr-only">(current)</span></a></li> -->
 		{% if request.user.is_authenticated %}
 		<li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="{% url 'users:profile' request.user.pk %}"><img style="width:20px;height:20px;" src="{{request.user.userprofile.photo.url}}"/> {{request.user.username}}
+        <a class="dropdown-toggle" data-toggle="dropdown" href="{% url 'users:profile' request.user.pk %}"><img style="width:20px;height:20px;" class="img-circle" src="{{request.user.userprofile.photo.url}}"/> {{request.user.username}}
         <span class="caret"></span></a>
         <ul class="dropdown-menu">
           <li><a href="{% url 'users:profile' request.user.pk %}"><span class="glyphicon glyphicon-user"></span> Profil</a></li>
@@ -82,7 +82,7 @@
 	  
         <li><form action="{% url 'post:create' %}" ><input type="submit" class="btn btn-success navbar-btn" value="Post yarat"/></form> </li>
 		{% else %}
-			<li><a href="{% url 'users:user_login' %}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+			<li><a href="{% url 'users:user_login' %}?next={{request.get_full_path}}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
 			<li><a href="{% url 'users:register' %}"><span class="glyphicon glyphicon-plus"></span> Register</a></li>
 		{% endif %}
       </ul>
