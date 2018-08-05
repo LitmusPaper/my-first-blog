@@ -27,7 +27,7 @@ def update(request):
 	if user_form.is_valid() and profile_form.is_valid():
 		user_form.save(commit='True')
 		profile_form.save(commit='True')
-		messages.success(request,'Profil redaktə olundu!')
+		messages.success(request,'Profil redaktə olundu!',extra_tags='profilupdate')
 		return HttpResponseRedirect(reverse('users:profile', kwargs={'pk':request.user.pk}))
 	return render(request,'users/update.html', context={'profile_form':profile_form,'user_form':user_form})
 
@@ -38,9 +38,9 @@ def change_password(request):
 		if form.is_valid():
 			user = form.save()
 			update_session_auth_hash(request, user)  # Important!
-			messages.success(request, 'Parolunuz Dəyişdirildi')
+			messages.success(request, 'Parolunuz Dəyişdirildi',extra_tags='changepass')
 		else:
-			messages.error(request, 'Xanaları düzgün doldurun', extra_tags='danger')
+			messages.error(request, 'Xanaları düzgün doldurun', extra_tags='passerror')
 	else:
 		form = CustomPasswordForm(request.user)
 	return render(request,'users/change_password.html', context={'form':form})

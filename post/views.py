@@ -33,7 +33,7 @@ def post_create(request):
 			crepost.author=request.user
 			crepost.save()
 			post_form=PostForm()
-			messages.success(request,'Post Yaradıldı')
+			messages.success(request,'Post Yaradıldı',extra_tags='addpost')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
 	return render(request,'post/post_create.html',context={'form':post_form})
 
@@ -46,7 +46,7 @@ def post_update(request,slug):
 	if request.method == 'POST':
 		if form.is_valid:
 			form.save(commit='True')
-			messages.success(request,'Post redaktə olundu!')
+			messages.success(request,'Post redaktə olundu!', extra_tags='postupdate')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':form.instance.slug}))
 	return render(request, 'post/update.html', context={'form':form})
 
@@ -56,7 +56,7 @@ def post_delete(request,slug):
 	if post.author!=request.user:
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':slug}))
 	post.delete()
-	messages.success(request,'Post silindi!',extra_tags='danger')
+	messages.success(request,'Post silindi!',extra_tags='postdelete')
 	return HttpResponseRedirect(reverse('post:index'))
 
 @login_required(login_url='/users/user_login/')
@@ -65,9 +65,9 @@ def comment_delete(request,pk):
 	if request.user != comment.sender:
 		HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	comment.delete()
-	messages.success(request,'Şərh silindi!',extra_tags='danger')
-	return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
-	
+	messages.success(request,'Şərh silindi!',extra_tags='commentdelete')
+	#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
+	return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
 def post_list(request):
 	filter_form=PostFilterForm(request.GET or None)
 	posts_list= Post.objects.order_by('-created_time')
@@ -114,8 +114,8 @@ def post_detail(request,slug):
 		comment.sender=request.user
 		comment.save()
 		comment_form=CommentForm()
-		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
-	
+		#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
+		return HttpResponseRedirect('#comment')
 	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form})
 
 @login_required(login_url='/users/user_login/')
@@ -128,7 +128,8 @@ def reply_view(request,pk):
 		reply.rsender=request.user
 		reply.save()
 		reply_form=ReplyForm()
-		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
+		#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
+		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
 	else:
 		return HttpResponseRedirect(reverse('post:index'))
 	

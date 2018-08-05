@@ -5,6 +5,17 @@
 
 
 {% block page %}
+{% if messages %}
+			
+			{% for message in messages %}
+			{% if 'profilupdate' in message.tags %}
+			<div class="alert alert-success fade in text-center">
+				{{message}}<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				</div>
+				{%endif%}
+				{% endfor %} 
+				
+		 {% endif %}
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-8">
@@ -20,9 +31,10 @@
 <div class="col-lg-8">
 {% if user.last_login %}<p> Sonuncu dəfə {{user.last_login|timesince}} əvvəl daxil olub</p> {% endif %}
 {% if user.email %}<p>Email: {{user.email}}</p> {% endif %}
-{% if user.userprofile.bio %}<p>Haqqında: <br>  {{user.userprofile.bio}} </p>{% endif %}
-{% if user.userprofile.tel %}<p>Telefon: <br>  {{user.userprofile.tel}} </p>{% endif %}
-{% if user.userprofile.sex %}<p>Cins: <br>  {{user.userprofile.sex}} </p>{% endif %}
+{% if user.userprofile.bio %}<p>Haqqında: <br>  {{user.userprofile.bio|linebreaks}} </p><hr>{% endif %}
+{% if user.userprofile.tel %}<p>Telefon: <br>  {{user.userprofile.tel}} </p><hr>{% endif %}
+{% if user.userprofile.sex %}<p>Cins: <br>{% if user.userprofile.sex == '1' %} Kişi {% elif user.userprofile.sex == '2' %} Qadın {% endif %} </p><hr>{% endif %}
+{% if user.userprofile.tarix %}<p>Doğum tarixi: <br>  {{user.userprofile.tarix}} </p><hr>{% endif %}
 {% if user.is_superuser %}<button class="btn btn-danger">ADMİN</button>{% endif%}
 {% if user.is_staff %}<button class="btn btn-success">STAFF</button>{% endif%}
 </div>

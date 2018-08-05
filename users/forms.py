@@ -1,3 +1,4 @@
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
@@ -48,13 +49,16 @@ class LoginForm(forms.Form):
 
 
 class ProfileForm(forms.ModelForm):
+	tarix = forms.DateField(label='Doğum Tarixi',help_text='Belə yazın: 31-12-0000',input_formats=['%d-%m-%Y'],widget=forms.DateInput())
 	class Meta:
 		model=UserProfile
+		type='test'
 		fields=('bio','tel','tarix','sex','photo')
 	
 	
 	def __init__(self, *args, **kwargs):
 		super(ProfileForm,self).__init__(*args, **kwargs)
+		#self.fields['tarix'].widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime":False})
 		self.fields['bio'].widget.attrs['class']='form-control'
 		self.fields['tel'].widget.attrs['class']='form-control'
 		self.fields['tarix'].widget.attrs['class']='form-control'
