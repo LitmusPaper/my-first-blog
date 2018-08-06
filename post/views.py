@@ -106,22 +106,26 @@ def post_list(request):
 def post_detail(request,slug):
 	#post=Post.objects.get(pk=pk)  # Ən sadə üsul
 	post=get_object_or_404(Post, slug=slug)
-	comment_form=CommentForm(request.POST or None)
+	comment_form=CommentForm()
 	reply_form=ReplyForm()
-	if comment_form.is_valid():
-		comment=comment_form.save(commit=False)
-		comment.post=post
-		comment.sender=request.user
-		comment.save()
-		comment_form=CommentForm()
-		#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
-		return HttpResponseRedirect('#comment')
+	if request.method == "POST":
+		comment_form=CommentForm(request.POST)
+		if comment_form.is_valid():
+			comment=comment_form.save(commit=False)
+			comment.post=post
+			comment.sender=request.user
+			comment.save()
+			comment_form=CommentForm()
+			#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
+			return HttpResponseRedirect('#comment')
+		else:
+			return HttpResponseRedirect('#comment')
 	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form})
 
 @login_required(login_url='/users/user_login/')
 def reply_view(request,pk):
-	comment=Comment.objects.get(pk=pk)
-	reply_form=ReplyForm(request.POST or None)
+	comment=get_object_or_404(Comment, pk=pk)
+	reply_form=ReplyForm(request.POST)
 	if reply_form.is_valid():
 		reply=reply_form.save(commit=False)
 		reply.comment=comment
@@ -131,7 +135,7 @@ def reply_view(request,pk):
 		#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
 	else:
-		return HttpResponseRedirect(reverse('post:index'))
+		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
 	
 def test(request):
 	return render(request, 'base.html')

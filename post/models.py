@@ -74,12 +74,12 @@ class Comment(models.Model):
 		verbose_name='Şərh'
 		verbose_name_plural='Şərhlər'
 		ordering=['-date']
-	def save(self,*args, **kwargs):
+	'''def save(self,*args, **kwargs):
 		text=self.text
 		com_list=Comment.objects.filter(sender=self.sender)
 		com_list=com_list.filter(text=text)
 		if len(com_list) ==0:
-			super(Comment,self).save(*args,**kwargs)
+			super(Comment,self).save(*args,**kwargs)'''
 		
 		
 	def __str__(self):

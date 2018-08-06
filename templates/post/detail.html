@@ -4,6 +4,36 @@
 {% block title %} {{post.title}} {% endblock %}
 
 
+
+{% block kod %}
+<script>
+
+$(document).ready(function(){
+		$("#sub").click(function(e){
+		e.preventDefault();
+		$("#commentform").submit();
+		$("textarea:first").val("");
+		
+		
+		
+		});
+		$("#replysub").click(function(e){
+		e.preventDefault();
+		$("#reply").submit();
+		$("#id_rtext").val("");
+		
+		
+		
+		});
+        
+   
+});
+</script>
+
+
+{% endblock %}
+
+
 {% block page %}
 
 {% if messages %}
@@ -45,7 +75,7 @@
 			<div class="row">
 			<div class='col-lg-10 col-lg-offset-1'>
 			{% if request.user.is_authenticated %}
-			<form action="{% url 'post:detail' post.slug %}" method="post">
+			<form id="commentform" action="{% url 'post:detail' post.slug %}" method="post">
 				{% csrf_token %}
 				
 				{% for field in form %}
@@ -98,7 +128,7 @@
 					{% if request.user.is_authenticated %}
 					
 					<div id="reply{{comment.pk}}" class="collapse">
-						<form action="{% url 'post:reply' comment.pk %}" method="post">
+						<form id="reply" action="{% url 'post:reply' comment.pk %}" method="post">
 								{% csrf_token %}
 					
 								{% for field in reply_form %}
@@ -107,7 +137,7 @@
 							{{field.errors}}
 							{{field}} <br>
 								{% endfor %}
-							<input type="submit" class="btn btn-info" value="Yaz"/></div>
+							<input type="submit" id ="replysub" class="btn btn-info" value="Yaz"/></div>
 						</form>
 					</div>
 					{% endif %}
