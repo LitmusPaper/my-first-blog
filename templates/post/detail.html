@@ -6,30 +6,42 @@
 
 
 {% block kod %}
+
 <script>
 
 $(document).ready(function(){
 		$("#sub").click(function(e){
 		e.preventDefault();
+		if ($("#id_text").val() != ""){
 		$("#commentform").submit();
-		$("textarea:first").val("");
-		
+		$('#sub').prop('disabled', true);
+		} else {
+		 alert("Şərh yazmamısız");
+		}
 		
 		
 		});
+		
 		$("#replysub").click(function(e){
 		e.preventDefault();
-		$("#reply").submit();
-		$("#id_rtext").val("");
-		
+		if ($("#id_rtext").val() != ""){
+		$("#reply").submit()
+		$('#replysub').prop('disabled', true);
+		} else {
+		alert("Cavab yazmamısız")
+		}
 		
 		
 		});
+		$("#delslide").click(function(){
+    $("#del").slideToggle();
+});
+
         
    
 });
-</script>
 
+</script>
 
 {% endblock %}
 
@@ -62,8 +74,8 @@ $(document).ready(function(){
 			{% if request.user == post.author %}
 			<a class="btn btn-info" href="{% url 'post:update' post.slug %} "><span class="glyphicon glyphicon-pencil"></span>  Postu dəyiş</a>
 			
-			<button class="btn btn-danger" data-toggle="collapse" data-target="#demo"><span class="glyphicon glyphicon-trash"></span> Sil</button>
-			<div id="demo" class="collapse">
+			<button id="delslide" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Sil</button>
+			<div id="del" class="collapse">
 			<p class="lead text-center">əminsiz?<br>
 			<a class="btn btn-danger" href="{% url 'post:delete' post.slug %} "> Postu Sil</a></p>
 			</div>{% endif %}

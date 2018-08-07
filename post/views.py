@@ -32,7 +32,7 @@ def post_create(request):
 			crepost=post_form.save(commit=False)
 			crepost.author=request.user
 			crepost.save()
-			post_form=PostForm()
+			#post_form=PostForm()
 			messages.success(request,'Post Yaradıldı',extra_tags='addpost')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
 	return render(request,'post/post_create.html',context={'form':post_form})
