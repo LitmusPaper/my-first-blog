@@ -2,27 +2,35 @@
 {% load static %}
 {% block title %} Post yarat{% endblock %}
 {% block kod %}
+
 <script>
+
 $(document).ready(function(){
 		$("#sub").click(function(e){
 		e.preventDefault();
+		if ($("#id_title").val() != "" && $("#id_category").val() != ""){
+		
 		$("#postform").submit();
 		$('#sub').prop('disabled', true);
-		
-		});
+		} else{
+		alert("Xanaları doldurun");
+		}
+		}); 
 	});
 
-</script>
+</script> 
+
 {% endblock %}
 {% block page %}
 	
 	<h2 class="page-header">Post Yarat</h2>
 	<div class="col-lg-10 col-lg-offset-1">
-		<form id="postform" action="" enctype="multipart/form-data" method="post" novalidate>
+		<form id="postform" action="" enctype="multipart/form-data" method="post" >
 			{% csrf_token %}
 			{{ form.media }}
 			{% for field in form %}
 				<div class="form-group">
+				
 				{{ field.label_tag }}
 				{{field}} </div>
 				

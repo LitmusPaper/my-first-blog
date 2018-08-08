@@ -28,13 +28,15 @@ def post_create(request):
 	post_form=PostForm()
 	if request.method == "POST":
 		post_form=PostForm(request.POST, files=request.FILES or None)
-		if post_form.is_valid:
+		if post_form.is_valid():
 			crepost=post_form.save(commit=False)
 			crepost.author=request.user
 			crepost.save()
 			#post_form=PostForm()
 			messages.success(request,'Post Yaradıldı',extra_tags='addpost')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
+		else:
+			HttpResponseRedirect(reverse('post:index'))
 	return render(request,'post/post_create.html',context={'form':post_form})
 
 @login_required(login_url='/users/user_login/')
@@ -44,7 +46,7 @@ def post_update(request,slug):
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':slug}))
 	form=PostForm(data=request.POST or None, instance=post, files=request.FILES or None)
 	if request.method == 'POST':
-		if form.is_valid:
+		if form.is_valid():
 			form.save(commit='True')
 			messages.success(request,'Post redaktə olundu!', extra_tags='postupdate')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':form.instance.slug}))
@@ -63,7 +65,7 @@ def post_delete(request,slug):
 def comment_delete(request,pk):
 	comment = get_object_or_404(Comment,pk=pk)
 	if request.user != comment.sender:
-		HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
+		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	comment.delete()
 	messages.success(request,'Şərh silindi!',extra_tags='commentdelete')
 	#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
@@ -106,6 +108,8 @@ def post_list(request):
 def post_detail(request,slug):
 	#post=Post.objects.get(pk=pk)  # Ən sadə üsul
 	post=get_object_or_404(Post, slug=slug)
+	post.read += 1
+	post.save()
 	comment_form=CommentForm()
 	reply_form=ReplyForm()
 	like=Like.objects.filter(sender=request.user).filter(post=post)
