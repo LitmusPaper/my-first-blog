@@ -16,8 +16,7 @@ from django.contrib.auth.decorators import login_required
 def profile(request,pk):
 	user_list=User.objects.all()
 	user=user_list.get(pk=pk)
-	posts_list=Post.objects.filter(author_id=pk)
-	return render(request,'users/profile.html', context={'user':user,'post_list':posts_list,'user_list':user_list})
+	return render(request,'users/profile.html', context={'user':user,'user_list':user_list})
 
 @login_required(login_url='/users/user_login/')
 def update(request):

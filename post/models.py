@@ -97,3 +97,12 @@ class Reply(models.Model):
 		ordering=['-date']
 	def __str__(self):
 		return '%s - %s'%(self.rsender, self.comment)
+
+class Like(models.Model):
+	post=models.ForeignKey(Post, verbose_name='like', related_name='like')
+	sender=models.ForeignKey(User, verbose_name='sender',related_name='likesender')
+	date= models.DateTimeField(auto_now_add=True)
+	
+	class Meta:
+		verbose_name='Like'
+		verbose_name='Likes'

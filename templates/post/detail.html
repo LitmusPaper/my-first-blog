@@ -36,6 +36,7 @@ $(document).ready(function(){
 		$("#delslide").click(function(){
     $("#del").slideToggle();
 });
+$('[data-toggle="popover"]').popover(); 
 
         
    
@@ -71,10 +72,25 @@ $(document).ready(function(){
 			<div class="text-justify"> {{ post.post|safe }} </div></div>
 			<div class="media-center">
 				<img src="{{post.get_img_or_default}}" class="img-responsive" style="max-width: 100%; display: block; height: auto;"/></div><br>
-			{% if request.user == post.author %}
+				{% if request.user.is_authenticated %}
+				{% if like %}
+			<div id="like"><a class="btn btn-danger" href="{% url 'post:like' post.pk %}?act=unlike"><span class="glyphicon glyphicon-thumbs-down"></span></a> 
+			{% else %}
+			<div id="like"><a class="btn btn-success" href="{% url 'post:like' post.pk %}?act=like"><span class="glyphicon glyphicon-thumbs-up"></span></a> 
+			{% endif %}
+			<a data-toggle="popover" data-trigger="hover" data-placement="bottom" data-html="true" data-content="{% for like in post.like.all %}{{like.sender }} <br/> {% endfor %}">
+			<span class="glyphicon glyphicon-thumbs-up"></span> {{post.like.all|length}} </a>
+			
+			
+			
+			
+			
+			{% endif %}
+			
+			{% if request.user == post.author %}<br><br>
 			<a class="btn btn-info" href="{% url 'post:update' post.slug %} "><span class="glyphicon glyphicon-pencil"></span>  Postu dəyiş</a>
 			
-			<button id="delslide" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Sil</button>
+			<button id="delslide" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Sil</button></div>
 			<div id="del" class="collapse">
 			<p class="lead text-center">əminsiz?<br>
 			<a class="btn btn-danger" href="{% url 'post:delete' post.slug %} "> Postu Sil</a></p>

@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,reverse,get_object_or_404,Http404
-from .models import Post,Category, Comment, Reply
+from .models import Post,Category, Comment, Reply, Like
 from .forms import PostForm,PostFilterForm, CommentForm, ReplyForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -108,6 +108,11 @@ def post_detail(request,slug):
 	post=get_object_or_404(Post, slug=slug)
 	comment_form=CommentForm()
 	reply_form=ReplyForm()
+	like=Like.objects.filter(sender=request.user).filter(post=post)
+	if like:
+		like=True
+	else:
+		like=False
 	if request.method == "POST":
 		comment_form=CommentForm(request.POST)
 		if comment_form.is_valid():
@@ -120,7 +125,7 @@ def post_detail(request,slug):
 			return HttpResponseRedirect('#comment')
 		else:
 			return HttpResponseRedirect('#comment')
-	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form})
+	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form,'like':like})
 
 @login_required(login_url='/users/user_login/')
 def reply_view(request,pk):
@@ -136,7 +141,30 @@ def reply_view(request,pk):
 		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
 	else:
 		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
-	
+
+@login_required(login_url='/users/user_login/')
+def like(request,pk):
+	post=get_object_or_404(Post, pk=pk)
+	user=request.user
+	if request.method == 'GET':
+		like=Like.objects.filter(sender=user).filter(post=post)
+		act=request.GET.get('act','')
+		if act == 'like':
+			if like:
+				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+			else:
+				like=Like(post=post,sender=user)
+				like.save()
+				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+		if act == 'unlike':
+			if like:
+				like.delete()
+				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+			else:
+				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+	return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+		
+		
 def test(request):
 	return render(request, 'base.html')
 	
