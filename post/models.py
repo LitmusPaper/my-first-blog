@@ -59,6 +59,11 @@ class Post(models.Model):
 			return self.img.url
 		return '/staticfiles/img/default.png'
 	
+	def get_likes(self):
+		likes=Like.objects.filter(post=self).count()
+		return likes
+	
+	
 	class Meta:
 		verbose_name='Postlar'
 		verbose_name_plural='Postlar'
@@ -107,3 +112,4 @@ class Like(models.Model):
 	class Meta:
 		verbose_name='Like'
 		verbose_name='Likes'
+		

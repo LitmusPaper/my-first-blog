@@ -2,12 +2,14 @@ from django.shortcuts import render,HttpResponse,HttpResponseRedirect,reverse,ge
 from .models import Post,Category, Comment, Reply, Like
 from .forms import PostForm,PostFilterForm, CommentForm, ReplyForm
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import django
 import jquery
 from time import sleep
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from django.http import JsonResponse
 
 def form_test(request):
 	form= TestForm()
@@ -112,11 +114,7 @@ def post_detail(request,slug):
 	post.save()
 	comment_form=CommentForm()
 	reply_form=ReplyForm()
-	like=Like.objects.filter(sender=request.user).filter(post=post)
-	if like:
-		like=True
-	else:
-		like=False
+	like=Like.objects.filter(sender=request.user,post=post).exists()
 	if request.method == "POST":
 		comment_form=CommentForm(request.POST)
 		if comment_form.is_valid():
@@ -150,29 +148,28 @@ def reply_view(request,pk):
 def like(request,pk):
 	post=get_object_or_404(Post, pk=pk)
 	user=request.user
-	if request.method == 'GET':
-		like=Like.objects.filter(sender=user).filter(post=post)
-		act=request.GET.get('act','')
-		if act == 'like':
-			if like:
-				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
-			else:
-				like=Like(post=post,sender=user)
-				like.save()
-				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
-		if act == 'unlike':
-			if like:
-				like.delete()
-				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
-			else:
-				return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
-	return HttpResponseRedirect('/post/detail/'+post.slug+'#like')
+	like, created = Like.objects.get_or_create(sender=user, post=post)
+	
+	data={'success':None}
+	if created:
+		data['success']='like'
+	else:
+		like.delete()
+		data['success']='unlike'
+	dat = list(Like.objects.filter(post=post).values('sender'))
+	userlist=[]
+	for element in dat:
+		pk=element['sender']
+		username = User.objects.get(pk=pk).username
+		userlist.append(username)
+	data['names']=userlist
+	return JsonResponse(data=data)
 		
 		
 def test(request):
 	return render(request, 'base.html')
-	
-	
+
+
 	
 	
 	

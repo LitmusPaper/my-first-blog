@@ -35,8 +35,62 @@ $(document).ready(function(){
 		});
 		$("#delslide").click(function(){
     $("#del").slideToggle();
-});
+			});
 $('[data-toggle="popover"]').popover(); 
+$('#likebtn').click(function(e){
+	e.preventDefault();
+	var a = $(this);
+	var link=a.attr('href');
+	var icon =$("#icon");
+	var likes=$("#likenum");
+	var likers=$("#likers");
+	var name
+	var txt=' ';
+	
+	$.ajax({
+
+		method: "GET",
+		type: 'json',
+		url: link ,
+		success: function(data){
+			var names=data['names']
+			for (name in names){
+				txt= txt + names[name] + '<br>';
+			
+			}
+			
+			
+			if(data['success'] =='like'){
+			likes.text(function(i, origText){
+			return Number(origText)+1
+			
+			});
+			
+			icon.attr("class","glyphicon glyphicon-thumbs-down");
+			a.attr("class","btn btn-danger");
+			} else if (data['success'] =='unlike'){
+			likes.text(function(i, origText){
+			return Number(origText)-1
+			
+			});
+			
+			icon.attr("class","glyphicon glyphicon-thumbs-up");
+			a.attr("class","btn btn-success");
+			
+				}
+				
+				likers.attr("data-content",txt);
+				
+				}
+
+
+		
+		
+		})
+
+
+
+});
 
         
    
@@ -73,21 +127,22 @@ $('[data-toggle="popover"]').popover();
 			<div class="media-center">
 				<img src="{{post.get_img_or_default}}" class="img-responsive" style="max-width: 100%; display: block; height: auto;"/></div><br>
 				<p><b>{{ post.read}}</b> dəfə oxunub</p>
+				<!---------------------------------- LIKE ---------------------------------------->
 				{% if request.user.is_authenticated %}
 				{% if like %}
-			<div id="like"><a class="btn btn-danger" href="{% url 'post:like' post.pk %}?act=unlike"><span class="glyphicon glyphicon-thumbs-down"></span></a> 
+				
+			<a id='likebtn' class="btn btn-danger" data-url="{% url 'post:like' post.pk %}" href="{% url 'post:like' post.pk %}"><span id="icon" class="glyphicon glyphicon-thumbs-down"></span></a> 
 			{% else %}
-			<div id="like"><a class="btn btn-success" href="{% url 'post:like' post.pk %}?act=like"><span class="glyphicon glyphicon-thumbs-up"></span></a> 
+			
+			<a id='likebtn' class="btn btn-success" href="{% url 'post:like' post.pk %}"><span id="icon" class="glyphicon glyphicon-thumbs-up"></span></a> 
 			{% endif %}
-			<a data-toggle="popover" data-trigger="hover" data-placement="bottom" data-html="true" data-content="{% for like in post.like.all %}{{like.sender }} <br/> {% endfor %}">
-			<span class="glyphicon glyphicon-thumbs-up"></span> {{post.like.all|length}} </a>
+			<a id="likers" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-html="true" data-content="{% for like in post.like.all %}{{like.sender }} <br/> {% endfor %}">
+			<span class="glyphicon glyphicon-thumbs-up"></span> <span id="likenum">{{post.get_likes}}</span></a>
 			
 			
-			
-			
-			
+		
 			{% endif %}
-			
+			<!----------------------------------------------/LIKE/------------------------------------->
 			{% if request.user == post.author %}<br><br>
 			<a class="btn btn-info" href="{% url 'post:update' post.slug %} "><span class="glyphicon glyphicon-pencil"></span>  Postu dəyiş</a>
 			
@@ -96,7 +151,7 @@ $('[data-toggle="popover"]').popover();
 			<p class="lead text-center">əminsiz?<br>
 			<a class="btn btn-danger" href="{% url 'post:delete' post.slug %} "> Postu Sil</a></p>
 			</div>{% endif %}
-		</div>
+	
 		
 		                               <!---------------------------------------  COMMENT ------------------------------------------->   
 		<div id="comment" class="container-fluid">
