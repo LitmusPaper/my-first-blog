@@ -10,6 +10,11 @@
 <script>
 
 $(document).ready(function(){
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 		$("#sub").click(function(e){
 		e.preventDefault();
 		if ($("#id_text").val() != ""){
@@ -22,17 +27,86 @@ $(document).ready(function(){
 		
 		});
 		
-		$("#replysub").click(function(e){
+		$(".comdelete").click(function(e){
 		e.preventDefault();
-		if ($("#id_rtext").val() != ""){
-		$("#reply").submit()
-		$('#replysub').prop('disabled', true);
+		var comment= $(this).parents("#commentt");
+		var link= $(this).attr('href');
+		var col = comment.parent();
+		var imgcommentt=col.prev();
+		$.ajax({
+			method: "GET",
+			type: "json",
+			url: link,
+			success: function(data){
+				if(data['success'] == 'true'){
+
+					imgcommentt.remove();
+					comment.remove();
+
+				}
+
+
+
+			}
+
+
+		})
+		
+		});
+		
+		
+		
+		
+		
+		
+		
+		$(".replyform").submit(function(e){
+		e.preventDefault();
+		var form = $(this);
+		var input = form.find("#id_rtext");
+		var button = form.find("#replysub");
+		//console.log($(this).parents("form"));
+		if (input.val() != ""){
+		
+		var action = form.attr('action');
+		var form_ser = form.serialize();
+		$.ajax({
+			method: "POST",
+			type: "json",
+			url: action,
+			data: form_ser,
+			success: async function(data){
+			if (data["success"] == 'submit') {
+			var div = "#"+"replies" + data['pk'];
+			var date = data['date'].substr(0,16).replace("T", " ")
+			var rep = data['text'];
+			var sender = data['sender'];
+			
+			var html1 = '<h5><strong>'+sender+'</strong>'+' '+'<small>['+date+']</small></h5>';
+			var html2 = $("<p></p>").text(rep);
+			input.val("");
+			button.prop('disabled', true);
+			await sleep(1000)
+			button.prop('disabled', false);
+			$(div).prepend(html2);
+			$(div).prepend(html1);
+			
+			}
+			
+			}
+		
+		
+		})
+		
+		
+		
+		
 		} else {
 		alert("Cavab yazmamısız")
 		}
-		
-		
 		});
+		
+		
 		$("#delslide").click(function(){
     $("#del").slideToggle();
 			});
@@ -88,13 +162,13 @@ $('#likebtn').click(function(e){
 		
 		})
 
-
-
 });
 
-        
+
+
+    });    
    
-});
+
 
 </script>
 
@@ -156,7 +230,7 @@ $('#likebtn').click(function(e){
 		                               <!---------------------------------------  COMMENT ------------------------------------------->   
 		<div id="comment" class="container-fluid">
 			<h2 class="page-header"> Şərhlər ({{post.comment.all|length}})</h2>
-			<div class="row">
+			
 			<div class='col-lg-10 col-lg-offset-1'>
 			{% if request.user.is_authenticated %}
 			<form id="commentform" action="{% url 'post:detail' post.slug %}" method="post">
@@ -177,9 +251,9 @@ $('#likebtn').click(function(e){
 				<div class="alert alert-warning text-center">
 				Şərh yazmaq üçün <strong><a href="{% url 'users:user_login' %}?next={% url 'post:detail' post.slug %}">Daxil ol</a></strong>un
 				</div>
-			{% endif %}</div>
+			{% endif %}
 			
-			<div class="col-lg-8 col-lg-offset-2">
+			<div class="col-lg-12">
 			<!------------------------------------- MESSAGES --------------------->
 			{% if messages %}
 			
@@ -194,25 +268,33 @@ $('#likebtn').click(function(e){
 		 {% endif %}
 			
 				<!--------------------------------/MESSAGES----------------------->
+				
 				{% for comment in post.comment.all %}
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h3> {{comment.sender}}<small> {{comment.date}}</small>
+				<div class="row">
+				<div class="col-lg-12">
+				
+						<div class="col-lg-1">
+							
+							<img id="imgcommentt" src="{{comment.sender.userprofile.photo.url}}" style="width:40px; height:40px;" class="img-responsive img-circle"/></div> 
+							<div class="col-lg-11"><div id="commentt"><h4><b>{{comment.sender}}</b><small> {{comment.date}}</small>
 							{% if request.user == comment.sender %}
-							<a class="btn btn-danger" href="{% url 'post:comment_delete' comment.pk %} ">  <span class="glyphicon glyphicon-trash"></span></a>
-							{% endif %}{% if request.user.is_authenticated %}<button class="btn btn-info" data-toggle="collapse" data-target="#reply{{comment.pk}}"><span class="glyphicon glyphicon-share-alt"></span></button>{% endif %} </h3>
-						</div>
-						<div class="panel-body">
+							<a class="btn btn-danger comdelete" href="{% url 'post:comment_delete' comment.pk %} ">  <span class="glyphicon glyphicon-trash"></span></a>
+							{% endif %}{% if request.user.is_authenticated %}
+							<button class="btn btn-success" data-toggle="collapse" data-target="#reply{{comment.pk}}">
+							<span class="glyphicon glyphicon-share-alt"></span></button>
+							{% endif %}<button class="btn btn-info" data-toggle="collapse" data-target="#replies{{comment.pk}}">
+							<span class="glyphicon glyphicon-collapse-down"></span></button> </h4>
+						
+						
 							<p>{{comment.text}}</p>
 							<hr>
-					</div>
-					
+							
 					<!------------------------------- REPLY ---------------------->
-					
+					<div class="col-lg-12">
 					{% if request.user.is_authenticated %}
 					
 					<div id="reply{{comment.pk}}" class="collapse">
-						<form id="reply" action="{% url 'post:reply' comment.pk %}" method="post">
+						<form id="reply" class="replyform" action="{% url 'post:reply' comment.pk %}" method="post">
 								{% csrf_token %}
 					
 								{% for field in reply_form %}
@@ -221,24 +303,29 @@ $('#likebtn').click(function(e){
 							{{field.errors}}
 							{{field}} <br>
 								{% endfor %}
-							<input type="submit" id ="replysub" class="btn btn-info" value="Yaz"/></div>
+							<input type="submit" id ="replysub" class="btn btn-info replysub" value="Yaz"/></div>
 						</form>
 					</div>
+					
 					{% endif %}
 
-						<ul class="list-group">
+							<div id="replies{{comment.pk}}" class="collapse">
 						{% for reply in comment.reply.all %}
+					
+							
+						<h5><strong>{{reply.rsender}}</strong> <small>[{{reply.date}}]</small></h5>
+						<p>{{reply.rtext}} </p>
 						
-							<li class="list-group-item active">	
-						<h4 class="list-group-item-heading"><strong>{{reply.rsender}}</strong> [{{reply.date}}]</h4>
-						<p class="list-group-item-text">{{reply.rtext}} </p>
-						</li>
 				
 							
 							
 							
-						{% endfor %}</ul>	</div>
-						
+						{% endfor %}</div>
+						</div>
+								</div> <!-- col-lg-12 -->
+							</div> <!--col-lg-11 -->
+							</div>
+						</div> <!-- row -->
 					<!---------------------------------------------- END REPLY ----------------------------------------->
 					
 					{% empty %}
@@ -246,9 +333,9 @@ $('#likebtn').click(function(e){
 							İlk şərhi <strong>SƏN</strong> Yaz 
 						</div>
 					{% endfor %}
-					</div>
+					</div></div>
 					
-				</div>
+				
 				
 		</div>
 		

@@ -71,7 +71,7 @@ def comment_delete(request,pk):
 	comment.delete()
 	messages.success(request,'Şərh silindi!',extra_tags='commentdelete')
 	#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
-	return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
+	return JsonResponse(data={'success':'true'})
 def post_list(request):
 	filter_form=PostFilterForm(request.GET or None)
 	posts_list= Post.objects.order_by('-created_time')
@@ -140,9 +140,10 @@ def reply_view(request,pk):
 		reply.save()
 		reply_form=ReplyForm()
 		#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
-		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
+		#return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
+		return JsonResponse(data={'success':'submit','pk':pk,'sender':reply.rsender.username,'text':reply.rtext,'date':reply.date})
 	else:
-		return HttpResponseRedirect('/post/detail/'+comment.post.slug+'#comment')
+		return HttpResponse('444')
 
 @login_required(login_url='/users/user_login/')
 def like(request,pk):
