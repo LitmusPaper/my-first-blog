@@ -26,7 +26,7 @@ $(document).ready(function(){
 					if(data['success'] == 'submit'){
 						var sender = data['sender'];
 						var pk = data['pk'];
-						var date = data['date'].substr(0,16).replace("T", " ")
+						var date = dateFormat(data['date'], "d mmmm yyyy, HH:MM")
 						var avatar = data['avatar'];
 						var text = data['text'];
 						var html = '<div id="bigcomment" class="col-lg-12"><div class="col-lg-1">\
@@ -123,7 +123,7 @@ $(document).ready(function(){
 			success: async function(data){
 			if (data["success"] == 'submit') {
 			var div = "#"+"replies" + data['pk'];
-			var date = data['date'].substr(0,16).replace("T", " ")
+			var date = dateFormat(data['date'], "d mmmm yyyy, HH:MM")
 			var rep = data['text'];
 			var sender = data['sender'];
 			

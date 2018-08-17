@@ -9,8 +9,8 @@ $(document).ready(function(){
 		var block = $(".list-group");
 		var input = form.find("#id_title")
 		var formdata = form.serialize();
+		input.val("");
 		var button = form.find(".btn");
-		var options = { day: 'numeric', month: 'long', year: 'numeric',  hour: '2-digit', minute: '2-digit' };
 
 		$.ajax({
 			method: "POST",
@@ -19,7 +19,7 @@ $(document).ready(function(){
 			data: formdata,
 			success: async function(data){
 				if (data['success'] == 'true' ){
-					
+					 
 					var created = dateFormat(data['created'], "d mmmm yyyy, HH:MM");
 					
 					function completed(){
@@ -33,9 +33,8 @@ $(document).ready(function(){
 					var pk = data['pk'];
 					var html = '<li class="list-group-item list-group-item-success"><h4>\
 					' + title + '<small> ' + created + '</small>' + completed() + '</h4></li>';
-					input.val("");
-					button.prop('disabled', true);
 					
+					button.prop('disabled', true);
 					block.prepend(html);
 					await sleep(1000)
 					$('.list-group-item-success').removeClass('list-group-item-success')
