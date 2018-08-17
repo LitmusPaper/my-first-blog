@@ -44,7 +44,8 @@ INSTALLED_APPS = [
 	'jquery',
 	'django_cleanup',
 	'ckeditor',
-	'users'
+	'users',
+    'todo'
 
 
 #>>>>>>> c0d1fc480dec6df0472cee657b2d7419c4dc96d7

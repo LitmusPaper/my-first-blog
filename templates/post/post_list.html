@@ -20,7 +20,7 @@
 				{% endfor %} 
 				
 		 {% endif %}
-<div class="row">
+
 <div class="col-lg-12">
 
 <h3 class="text-center">{% if cat_name %}
@@ -43,10 +43,11 @@ Postlar <span class="label label-success">{{ post_list|length }}/{{post_list.pag
 </form>{% endif %}<hr>
 </div>
 
-
 <div class="panel-group">
-{% for post in post_list %}
 <div class="col-lg-12">
+
+{% for post in post_list %}
+
 <div class="panel panel-default" style="display:block">
 	<div style="display:block" class="panel-heading text-center"><p class="lead"><a href="{% url 'post:detail' post.slug %}">{{post.title}}</a>{% if post.draft %}
 	<span class='text-right'>|D</span>
@@ -54,13 +55,14 @@ Postlar <span class="label label-success">{{ post_list|length }}/{{post_list.pag
 	<div class="panel-body"><p class="text-info"><small>{{post.created_time}}</small>
 		Kateqoriya: {% for cat in post.category.all %} {{cat}} {% endfor %}<br></p>
      {{ post.post|safe|truncatewords_html:5 }}
-	</div></div><br></div>
+	</div></div><br>
 	{% empty %}
+
 		<div class="alert alert-warning text-center">
 			<strong>Post Yoxdur!</strong>
 		</div>
 		
-{% endfor %}
+{% endfor %}</div>
 </div>
 <div class="col-lg-12">
 {% if post_list.has_other_pages %}
@@ -86,6 +88,6 @@ Postlar <span class="label label-success">{{ post_list|length }}/{{post_list.pag
 {% endif %}
 </div>
 </div>
-</div>
+
 
 {% endblock %}

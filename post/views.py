@@ -69,7 +69,7 @@ def comment_delete(request,pk):
 	if request.user != comment.sender:
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	comment.delete()
-	messages.success(request,'Şərh silindi!',extra_tags='commentdelete')
+	#messages.success(request,'Şərh silindi!',extra_tags='commentdelete')
 	#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':comment.post.slug}))
 	return JsonResponse(data={'success':'true'})
 def post_list(request):
@@ -121,12 +121,14 @@ def post_detail(request,slug):
 			comment=comment_form.save(commit=False)
 			comment.post=post
 			comment.sender=request.user
+			
 			comment.save()
+			data={"success":"submit","text":comment.text,"pk":comment.pk,"sender":comment.sender.username,"avatar":comment.sender.userprofile.photo.url,"date":comment.date}
 			comment_form=CommentForm()
 			#return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':post.slug}))
-			return HttpResponseRedirect('#comment')
+			return JsonResponse(data=data)
 		else:
-			return HttpResponseRedirect('#comment')
+			return HttpResponseRedirect('#comments')
 	return render(request,'post/detail.html', context={'post':post,'form':comment_form,'reply_form':reply_form,'like':like})
 
 @login_required(login_url='/users/user_login/')

@@ -7,170 +7,7 @@
 
 {% block kod %}
 
-<script>
-
-$(document).ready(function(){
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
-		$("#sub").click(function(e){
-		e.preventDefault();
-		if ($("#id_text").val() != ""){
-		$("#commentform").submit();
-		$('#sub').prop('disabled', true);
-		} else {
-		 alert("Şərh yazmamısız");
-		}
-		
-		
-		});
-		
-		$(".comdelete").click(function(e){
-		e.preventDefault();
-		var comment= $(this).parents("#commentt");
-		var link= $(this).attr('href');
-		var col = comment.parent();
-		var imgcommentt=col.prev();
-		$.ajax({
-			method: "GET",
-			type: "json",
-			url: link,
-			success: function(data){
-				if(data['success'] == 'true'){
-
-					imgcommentt.remove();
-					comment.remove();
-
-				}
-
-
-
-			}
-
-
-		})
-		
-		});
-		
-		
-		
-		
-		
-		
-		
-		$(".replyform").submit(function(e){
-		e.preventDefault();
-		var form = $(this);
-		var input = form.find("#id_rtext");
-		var button = form.find("#replysub");
-		//console.log($(this).parents("form"));
-		if (input.val() != ""){
-		
-		var action = form.attr('action');
-		var form_ser = form.serialize();
-		$.ajax({
-			method: "POST",
-			type: "json",
-			url: action,
-			data: form_ser,
-			success: async function(data){
-			if (data["success"] == 'submit') {
-			var div = "#"+"replies" + data['pk'];
-			var date = data['date'].substr(0,16).replace("T", " ")
-			var rep = data['text'];
-			var sender = data['sender'];
-			
-			var html1 = '<h5><strong>'+sender+'</strong>'+' '+'<small>['+date+']</small></h5>';
-			var html2 = $("<p></p>").text(rep);
-			input.val("");
-			button.prop('disabled', true);
-			await sleep(1000)
-			button.prop('disabled', false);
-			$(div).prepend(html2);
-			$(div).prepend(html1);
-			
-			}
-			
-			}
-		
-		
-		})
-		
-		
-		
-		
-		} else {
-		alert("Cavab yazmamısız")
-		}
-		});
-		
-		
-		$("#delslide").click(function(){
-    $("#del").slideToggle();
-			});
-$('[data-toggle="popover"]').popover(); 
-$('#likebtn').click(function(e){
-	e.preventDefault();
-	var a = $(this);
-	var link=a.attr('href');
-	var icon =$("#icon");
-	var likes=$("#likenum");
-	var likers=$("#likers");
-	var name
-	var txt=' ';
-	
-	$.ajax({
-
-		method: "GET",
-		type: 'json',
-		url: link ,
-		success: function(data){
-			var names=data['names']
-			for (name in names){
-				txt= txt + names[name] + '<br>';
-			
-			}
-			
-			
-			if(data['success'] =='like'){
-			likes.text(function(i, origText){
-			return Number(origText)+1
-			
-			});
-			
-			icon.attr("class","glyphicon glyphicon-thumbs-down");
-			a.attr("class","btn btn-danger");
-			} else if (data['success'] =='unlike'){
-			likes.text(function(i, origText){
-			return Number(origText)-1
-			
-			});
-			
-			icon.attr("class","glyphicon glyphicon-thumbs-up");
-			a.attr("class","btn btn-success");
-			
-				}
-				
-				likers.attr("data-content",txt);
-				
-				}
-
-
-		
-		
-		})
-
-});
-
-
-
-    });    
-   
-
-
-</script>
+<script src="{% static 'js/detail.js' %}" type="text/javascript"></script>
 
 {% endblock %}
 
@@ -228,8 +65,8 @@ $('#likebtn').click(function(e){
 	
 		
 		                               <!---------------------------------------  COMMENT ------------------------------------------->   
-		<div id="comment" class="container-fluid">
-			<h2 class="page-header"> Şərhlər ({{post.comment.all|length}})</h2>
+		<div id="comments" class="container-fluid">
+			<h2 class="page-header"> Şərhlər (<span id="sumcomment">{{post.comment.all|length}}</span>)</h2>
 			
 			<div class='col-lg-10 col-lg-offset-1'>
 			{% if request.user.is_authenticated %}
@@ -243,7 +80,7 @@ $('#likebtn').click(function(e){
 				{{field.errors}}
 				{{field}} <br>
 				{% endfor %}
-				<input type="submit" id="sub" class="btn btn-info" value="Yaz"/></div>
+				<input type="submit" id="subcomment" class="btn btn-info" value="Yaz"/></div>
 			</form>
 			
 			
@@ -254,38 +91,32 @@ $('#likebtn').click(function(e){
 			{% endif %}
 			
 			<div class="col-lg-12">
-			<!------------------------------------- MESSAGES --------------------->
-			{% if messages %}
+			<!------------------------------------- MESSAGES -------------------
 			
-			{% for message in messages %}
-			{% if 'commentdelete' in message.tags %}
-			<div class="alert alert-danger fade in text-center">
-				{{message}}<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			<div id="messagediv" style="display: none;"class="alert alert-danger fade in text-center">
+				<span id="message"></span><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 				</div>
-				{%endif%}
-				{% endfor %} 
-				
-		 {% endif %}
+				-->
 			
 				<!--------------------------------/MESSAGES----------------------->
 				
+					<div id="commentsblock" class="row">
 				{% for comment in post.comment.all %}
-				<div class="row">
-				<div class="col-lg-12">
+				<div id="bigcomment" class="col-lg-12">
+				
 				
 						<div class="col-lg-1">
 							
-							<img id="imgcommentt" src="{{comment.sender.userprofile.photo.url}}" style="width:40px; height:40px;" class="img-responsive img-circle"/></div> 
-							<div class="col-lg-11"><div id="commentt"><h4><b>{{comment.sender}}</b><small> {{comment.date}}</small>
+						<img id="imgcomment" src="{{comment.sender.userprofile.photo.url}}" style="width:40px; height:40px;" class="img-responsive img-circle"/>
+						</div> 
+							<div id="comment" class="col-lg-11"><h4><b>{{comment.sender}}</b><small> {{comment.date}}</small>
 							{% if request.user == comment.sender %}
-							<a class="btn btn-danger comdelete" href="{% url 'post:comment_delete' comment.pk %} ">  <span class="glyphicon glyphicon-trash"></span></a>
+							<a class="btn btn-danger comdelete" href="{% url 'post:comment_delete' comment.pk %}">  <span class="glyphicon glyphicon-trash"></span></a>
 							{% endif %}{% if request.user.is_authenticated %}
 							<button class="btn btn-success" data-toggle="collapse" data-target="#reply{{comment.pk}}">
 							<span class="glyphicon glyphicon-share-alt"></span></button>
 							{% endif %}<button class="btn btn-info" data-toggle="collapse" data-target="#replies{{comment.pk}}">
 							<span class="glyphicon glyphicon-collapse-down"></span></button> </h4>
-						
-						
 							<p>{{comment.text}}</p>
 							<hr>
 							
@@ -320,12 +151,13 @@ $('#likebtn').click(function(e){
 							
 							
 							
-						{% endfor %}</div>
-						</div>
-								</div> <!-- col-lg-12 -->
-							</div> <!--col-lg-11 -->
-							</div>
-						</div> <!-- row -->
+						{% endfor %}</div> <!-- collapse -->
+						</div> <!-- col-lg-12 -->
+								
+							</div> <!--col-lg-11 #comment -->
+
+								</div> <!--col-lg-12 #bigcomment-->
+							
 					<!---------------------------------------------- END REPLY ----------------------------------------->
 					
 					{% empty %}
@@ -333,7 +165,9 @@ $('#likebtn').click(function(e){
 							İlk şərhi <strong>SƏN</strong> Yaz 
 						</div>
 					{% endfor %}
-					</div></div>
+				</div> <!-- row #commentsblock-->
+					</div>
+				</div>
 					
 				
 				

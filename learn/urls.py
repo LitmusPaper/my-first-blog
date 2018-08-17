@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^$', index),
 	url(r'^post/', include('post.urls',namespace='post')),
-	url(r'^users/', include('users.urls',namespace='users'))
+	url(r'^users/', include('users.urls',namespace='users')),
+	url(r'^todo/', include('todo.urls',namespace='todo')),
  ]
  
 urlpatterns +=static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
