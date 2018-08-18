@@ -14,8 +14,8 @@ def index(request):
 	com = request.GET.get('list', 'uncompleted')
 	if com == 'uncompleted':
 		object_list = object_list.filter(completed=False)
-	elif com == 'completed':
-		object_list = object_list.filter(completed=True)
+	elif com == 'all':
+		pass
 	paginator = Paginator(object_list, 10)
 	try:
 		object_list = paginator.page(page)
@@ -30,7 +30,8 @@ def index(request):
 			data.owner = request.user
 			data.save()
 			form = FastCreateForm()
-			json = {'success':'true', 'pk':data.pk, 'title':data.title,"created":data.created_to,"completed":data.completed}
+			json = {'success':'true', 'pk':data.pk, 'title':data.title,"created":data.created_to,
+			"completed":data.completed,"text":data.text}
 			return JsonResponse(data=json)
 	return render(request,'todo/index.html', context={'object_list':object_list,'form':form})
 
@@ -46,3 +47,11 @@ def complete(request, pk):
 		thing.save()
 		data={'success':True}
 	return JsonResponse(data=data)
+
+@login_required(login_url='/users/user_login/')
+def delete(request, pk):
+	thing = get_object_or_404(Thing, pk=pk)
+	if thing.owner != request.user:
+		return HttpResponse('400')
+	thing.delete()
+	return JsonResponse(data={"success":True})

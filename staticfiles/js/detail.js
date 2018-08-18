@@ -11,12 +11,14 @@ $(document).ready(function(){
 	$("#commentform").submit(function(e){
 		e.preventDefault();
 		var form = $(this);
+		var form_ser = form.serialize();
 		var link = form.attr('action');
 		var button = form.find("#subcomment");
 		var input= form.find("#id_text");
+		input.val("");
 		var block = $("#commentsblock");
-		if (input.val() != ""){
-			var form_ser = form.serialize();
+		if (form_ser != ""){
+			
 			$.ajax({
 				method: "POST",
 				type: "json",
@@ -36,7 +38,7 @@ $(document).ready(function(){
 							<hr></div></div>';
 						
 
-						input.val("");
+						
 						button.prop('disabled', true);
 						await sleep(1000)
 						block.prepend(html);
@@ -108,13 +110,15 @@ $(document).ready(function(){
 		$(".replyform").submit(function(e){
 		e.preventDefault();
 		var form = $(this);
+		var form_ser = form.serialize();
 		var input = form.find("#id_rtext");
+		input.val("");
 		var button = form.find("#replysub");
 		//console.log($(this).parents("form"));
-		if (input.val() != ""){
+		if (form_ser != ""){
 		
 		var action = form.attr('action');
-		var form_ser = form.serialize();
+		
 		$.ajax({
 			method: "POST",
 			type: "json",
@@ -129,7 +133,6 @@ $(document).ready(function(){
 			
 			var html1 = '<h5><strong>'+sender+'</strong>'+' '+'<small>['+date+']</small></h5>';
 			var html2 = $("<p></p>").text(rep);
-			input.val("");
 			button.prop('disabled', true);
 			await sleep(1000)
 			button.prop('disabled', false);
@@ -141,7 +144,7 @@ $(document).ready(function(){
 			}
 		
 		
-		})
+		})//AJAX
 		
 		
 		
@@ -153,9 +156,12 @@ $(document).ready(function(){
 		
 		// DELETE BUTTON
 		$("#delslide").click(function(){
-    	$("#del").slideToggle();
+
+    		$("#del").slideToggle();
+
 			});
-		$('[data-toggle="popover"]').popover(); 
+
+		$('[data-toggle="popover"]').popover(); //LIKERS
 
 
 //LIKE BUTTON

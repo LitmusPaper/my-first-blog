@@ -8,21 +8,23 @@
 
 {% endblock %}
 {% block page %}
-<form id="form" method="post" action="">
+<div class="container">
+<button id="openform" class="btn btn-success">Əlavə et</button>
+<form style="display: none;" id="form" method="post" action="">
 	{% csrf_token %}
 {{form.as_p}}
-<input class="btn btn-success" type="submit" value="yarat">
+<input class="btn btn-success" type="submit" value="Əlavə et">
 </form>
 <hr>
 <form id="listform" action="" method="get">
 	<div class="form-group">
 		<select id="list" name="list" class="form-control">
-			{% if request.GET.list == 'completed' %}
-			<option value="completed">Tamamlananlar</option>
+			{% if request.GET.list == 'all' %}
+			<option value="all">Hamısı</option>
 			<option value="uncompleted">Tamamlanmayanlar</option>
 			{% else %}
 			<option value="uncompleted">Tamamlanmayanlar</option>
-			<option value="completed">Tamamlananlar</option>
+			<option value="all">Hamısı</option>
 			{% endif %}
 			
 		</select>
@@ -32,10 +34,38 @@
 <hr>
 <ul class="list-group">
 {% for object in object_list %}
-<li class="list-group-item"> <h4>{% if object.completed == False %}
-	<a href="{% url 'todo:complete' object.pk %}" class="btn btn-success complete"><span class="glyphicon glyphicon-ok"></span></a>{% endif %}
-	{{object.title}}<small> {{object.created_to}} </small>
-	{% if object.completed %}<span class="badge">Tamamlanıb</span>{% endif %}</h4></li>
+<li href="#" class="list-group-item name">
+ <h4>
+ 	<div class="btn-group pull-right">
+	 	
+		{% if object.completed == False %}
+		<button type="button" url="{% url 'todo:complete' object.pk %}" class="btn btn-success complete">
+			<span class="glyphicon glyphicon-check"></span></button>
+		{% else %}
+		<button class="btn btn-info"><span class="glyphicon glyphicon-ok"></span></button>
+		{% endif %}
+		<button type="button" url="{% url 'todo:delete' object.pk %}" class="btn btn-danger delete"> <span class="glyphicon glyphicon-trash"></span> </button>
+	</div>
+	{{object.title}}
+	<small>
+	 {{object.created_to}} 
+	</small>
+	
+</h4>
+		<div style="display: none;" class="detail">
+			<hr> 
+			Əlavə olunub: {{ object.created_to }} <br>
+			{% if object.updated == True %}
+			Redaktə olunub: {{object.updated_to}} <br>
+			{% endif%}
+			{% if object.completed == True %}
+			Tamamlanıb: {{ object.completed_at }}<br>
+			{% endif %}
+			Haqqında:<br>
+			{{ object.text }}<br>
+		</div>
+	
+	</li>
 {% empty %}
 Boş
 {% endfor %}
@@ -43,7 +73,7 @@ Boş
 {% if object_list.has_other_pages %}
   <ul class="pagination">
     {% if object_list.has_previous %}
-      <li><a href="?page={{ object_list.previous_page_number }}">&laquo;</a></li>
+      <li><a href="?page={{ object_list.previous_page_number }}{% if request.GET.list %}&list={{request.GET.list}}{% endif %}">&laquo;</a></li>
     {% else %}
       <li class="disabled"><span>&laquo;</span></li>
     {% endif %}
@@ -51,16 +81,16 @@ Boş
       {% if object_list.number == i %}
         <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
       {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        <li><a href="?page={{ i }}{% if request.GET.list %}&list={{request.GET.list}}{% endif %}">{{ i }}</a></li>
       {% endif %}
     {% endfor %}
     {% if object_list.has_next %}
-      <li><a href="?page={{ object_list.next_page_number }}">&raquo;</a></li>
+      <li><a href="?page={{ object_list.next_page_number }}{% if request.GET.list %}&list={{request.GET.list}}{% endif %}">&raquo;</a></li>
     {% else %}
       <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
   </ul>
 {% endif %}
 
-
+</div>
 {% endblock %}

@@ -1,14 +1,14 @@
 from django import forms
 from .models import Thing
-from ckeditor.fields import RichTextField
+
 
 class FastCreateForm(forms.ModelForm):
-	title = forms.CharField(max_length=120,widget=forms.TextInput(attrs={"class":"form-control"}))
-	#text = RichTextField(max_length=500)
+	title = forms.CharField(max_length=120,label="Başlıq", widget=forms.TextInput(attrs={"class":"form-control"}))
+	text = forms.CharField(max_length=1200, label="Haqqında", widget=forms.Textarea(attrs={"required":"False", "class":"form-control"}))
 
 	class Meta:
 		model = Thing
-		fields = ['title']
+		fields = ['title','text']
 
 	'''def __init__(self, *args, **kwargs):
 		super(CreateThingForm, self).__init__(*args, **kwargs)
