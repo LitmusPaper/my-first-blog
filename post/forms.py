@@ -1,12 +1,13 @@
 from django import forms
 from .models import Post, Comment, Reply
 
+
+
 class PostForm(forms.ModelForm):
 	class Meta:
 		model=Post
 		fields=['title','post','category','img','draft']
-		
-	
+
 	def __init__(self, *args, **kwargs):
 		super(PostForm,self).__init__(*args, **kwargs)
 		self.fields['title'].widget.attrs['class']='form-control'

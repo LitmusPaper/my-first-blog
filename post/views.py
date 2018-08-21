@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import django
 import jquery
+from django.utils.text import slugify
 from time import sleep
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.http import JsonResponse
@@ -34,6 +35,7 @@ def post_create(request):
 			crepost=post_form.save(commit=False)
 			crepost.author=request.user
 			crepost.save()
+			post_form.save_m2m()
 			#post_form=PostForm()
 			messages.success(request,'Post Yaradıldı',extra_tags='addpost')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':crepost.slug}))
@@ -44,12 +46,19 @@ def post_create(request):
 @login_required(login_url='/users/user_login/')
 def post_update(request,slug):
 	post=get_object_or_404(Post,slug=slug)
+	title=post.title
 	if post.author!=request.user:
 		return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':slug}))
 	form=PostForm(data=request.POST or None, instance=post, files=request.FILES or None)
 	if request.method == 'POST':
 		if form.is_valid():
-			form.save(commit='True')
+			if slugify(form.cleaned_data['title']) == slugify(title):
+				form.save()
+			else:
+				crepost = form.save(commit=False)
+				crepost.slug=''
+				crepost.save()
+				form.save_m2m()
 			messages.success(request,'Post redaktə olundu!', extra_tags='postupdate')
 			return HttpResponseRedirect(reverse('post:detail', kwargs={'slug':form.instance.slug}))
 	return render(request, 'post/update.html', context={'form':form})
@@ -110,8 +119,8 @@ def post_list(request):
 def post_detail(request,slug):
 	#post=Post.objects.get(pk=pk)  # Ən sadə üsul
 	post=get_object_or_404(Post, slug=slug)
-	post.read += 1
-	post.save()
+	'''post.read += 1
+	post.save(editslug=False)'''
 	comment_form=CommentForm()
 	reply_form=ReplyForm()
 	like=Like.objects.filter(sender=request.user,post=post).exists()

@@ -29,7 +29,7 @@ class Post(models.Model):
 	read=models.PositiveIntegerField(default=0)
 	img= models.ImageField(blank=True, verbose_name='Post img',upload_to=upload_to)
 	draft=models.BooleanField(default=False)
-	category=models.ManyToManyField(Category,verbose_name='Kateqoriya')
+	category=models.ManyToManyField(Category, verbose_name='Kateqoriya')
 	created_time=models.DateTimeField(auto_now_add=True)
 	updated_time=models.DateTimeField(auto_now=True)
 	
@@ -40,14 +40,15 @@ class Post(models.Model):
 		return self.slug
 	
 	def unique_slug(self, new_slug, orginal_slug, index):
-		if Post.objects.filter(slug=new_slug):
+		exists = Post.objects.filter(slug=new_slug).exists()
+		if exists:
 			new_slug='%s-%s' %(orginal_slug,index)
 			index +=1
 			return self.unique_slug(new_slug=new_slug, orginal_slug=orginal_slug, index=index)
 		return new_slug
 		
-	def save(self,*args, **kwargs):
-		if self.slug=='':
+	def save(self, *args, **kwargs):
+		if self.slug =='':
 			index=1
 			new_slug=slugify(self.title)
 			self.slug=self.unique_slug(new_slug=new_slug, orginal_slug=new_slug, index=index)

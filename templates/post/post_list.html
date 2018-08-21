@@ -49,7 +49,8 @@ Postlar <span class="label label-success">{{ post_list|length }}/{{post_list.pag
 {% for post in post_list %}
 
 <div class="panel panel-default" style="display:block">
-	<div style="display:block" class="panel-heading text-center"><p class="lead"><a href="{% url 'post:detail' post.slug %}">{{post.title}}</a>{% if post.draft %}
+	<div style="display:block" class="panel-heading text-center"><p class="lead"><a href="{% url 'post:detail' post.get_slug %}">{{post.title}}</a>
+		{% if post.draft %}
 	<span class='text-right'>|D</span>
 	{% endif %}</p></div>
 	<div class="panel-body"><p class="text-info"><small>{{post.created_time}}</small>
